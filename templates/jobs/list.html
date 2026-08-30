@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Job Openings
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Job Openings</h1>
+
+        <p>
+            Create and manage hiring positions.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('jobs.create_job') }}"
+        class="btn"
+    >
+        Create Job
+    </a>
+
+</div>
+
+
+<div class="filter-links">
+
+    <a
+        href="{{ url_for('jobs.job_list', status='active') }}"
+        class="{% if selected_status == 'active' %}active{% endif %}"
+    >
+        Active
+    </a>
+
+    <a
+        href="{{ url_for('jobs.job_list', status='archived') }}"
+        class="{% if selected_status == 'archived' %}active{% endif %}"
+    >
+        Archived
+    </a>
+
+    <a
+        href="{{ url_for('jobs.job_list', status='all') }}"
+        class="{% if selected_status == 'all' %}active{% endif %}"
+    >
+        All
+    </a>
+
+</div>
+
+
+{% if jobs %}
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>Title</th>
+
+            <th>Department</th>
+
+            <th>Status</th>
+
+            <th>Created</th>
+
+            <th>Actions</th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody>
+
+        {% for job in jobs %}
+
+        <tr>
+
+            <td>
+                {{ job.title }}
+            </td>
+
+            <td>
+                {{ job.department }}
+            </td>
+
+            <td>
+
+                <span class="status {{ job.status }}">
+                    {{ job.status|capitalize }}
+                </span>
+
+            </td>
+
+            <td>
+
+                {% if job.created_at %}
+
+                    {{ job.created_at.strftime("%d %b %Y") }}
+
+                {% endif %}
+
+            </td>
+
+
+            <td class="actions">
+
+                {% if job.status != "archived" %}
+
+                    <a
+                        href="{{ url_for('jobs.edit_job', job_id=job.id) }}"
+                        class="small-btn"
+                    >
+                        Edit
+                    </a>
+
+                {% endif %}
+
+
+                {% if job.status == "open" %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('jobs.close_job', job_id=job.id) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="small-btn"
+                        >
+                            Close
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                {% if job.status == "closed" %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('jobs.open_job', job_id=job.id) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="small-btn"
+                        >
+                            Open
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                {% if job.status != "archived" %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('jobs.archive_job', job_id=job.id) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="small-btn danger"
+                        >
+                            Archive
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                {% if job.status == "archived" %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('jobs.restore_job', job_id=job.id) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="small-btn"
+                        >
+                            Restore
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+
+{% else %}
+
+    <div class="empty-state">
+
+        <h3>No job openings found</h3>
+
+        <p>
+            Create a new job opening to begin hiring.
+        </p>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

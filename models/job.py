@@ -24,6 +24,34 @@ class JobOpening(db.Model):
     status = db.Column(
         db.String(20),
         nullable=False,
+        default="open",
+        index=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now()
+    )
+
+    updated_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now(),
+        onupdate=db.func.now()
+    )
+
+    applications = db.relationship(
+        "Application",
+        back_populates="job",
+        lazy=True
+    )
+    description = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    status = db.Column(
+        db.String(20),
+        nullable=False,
         default="open"
     )
 

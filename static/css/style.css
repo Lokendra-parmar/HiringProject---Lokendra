@@ -78,3 +78,175 @@ button:hover {
 .alert.success {
     background: #e5ffe9;
 }
+
+/* adding job opening changes */
+.navbar {
+    background: #14213d;
+    color: white;
+    padding: 14px 30px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+}
+
+.nav-user {
+    color: #ddd;
+    font-size: 14px;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 35px auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.btn,
+.btn-secondary,
+.small-btn {
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn {
+    background: #14213d;
+    color: white;
+    padding: 10px 16px;
+    width: auto;
+}
+
+.btn-secondary {
+    background: #e5e5e5;
+    color: #222;
+    padding: 10px 16px;
+}
+
+.filter-links {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.filter-links a {
+    text-decoration: none;
+    color: #333;
+    padding: 7px 12px;
+    border-radius: 5px;
+}
+
+.filter-links a.active {
+    background: #14213d;
+    color: white;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th,
+td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #f0f2f5;
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.status.open {
+    background: #ddf7e5;
+}
+
+.status.closed {
+    background: #fff1cf;
+}
+
+.status.archived {
+    background: #eeeeee;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.actions form {
+    margin: 0;
+}
+
+.small-btn {
+    border: none;
+    background: #e5e5e5;
+    color: #222;
+    padding: 7px 10px;
+    width: auto;
+    font-size: 13px;
+}
+
+.small-btn.danger {
+    background: #ffe1e1;
+    color: #a40000;
+}
+
+.form-card {
+    max-width: 700px;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.empty-state {
+    background: white;
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+}

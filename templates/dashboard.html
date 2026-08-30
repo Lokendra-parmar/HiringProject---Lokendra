@@ -1,20 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
 
-    <meta charset="UTF-8">
+{% block title %}
+Dashboard - Hiring Pipeline
+{% endblock %}
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard - Hiring Pipeline</title>
+{% block content %}
 
-</head>
-
-<body>
-
-    <h1>Hiring Pipeline Dashboard</h1>
+    <h1>Dashboard</h1>
 
     <p>
         Welcome,
@@ -22,14 +16,19 @@
     </p>
 
     <p>
-        Role:
+        Your role:
         <strong>{{ current_user.role }}</strong>
     </p>
 
-    <a href="{{ url_for('auth.logout') }}">
-        Logout
-    </a>
+    {% if current_user.role == "recruiter" %}
 
-</body>
+        <a
+            class="btn"
+            href="{{ url_for('jobs.job_list') }}"
+        >
+            Manage Job Openings
+        </a>
 
-</html>
+    {% endif %}
+
+{% endblock %}
