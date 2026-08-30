@@ -16,6 +16,13 @@ from models.job import JobOpening
 from utils.decorators import role_required
 from utils.application_helpers import create_application_event
 
+# to use pipeline
+from utils.pipeline import (
+    advance_application,
+    reject_application,
+    reinstate_application
+)
+
 
 applications_bp = Blueprint(
     "applications",
@@ -271,3 +278,143 @@ def edit_application(application_id):
         "applications/edit.html",
         application=application
     )
+
+
+# pipeline routes advance
+@applications_bp.route(
+    "/<int:application_id>/advance",
+    methods=["POST"]
+)
+@role_required("recruiter")
+def advance(application_id):
+
+    application = db.session.get(
+        Application,
+        application_id
+    )
+
+    if not application:
+        abort(404)
+
+    try:
+
+        advance_application(
+            application,
+            current_user.id
+        )
+
+        db.session.commit()
+
+        flash(
+            "Application advanced successfully.",
+            "success"
+        )
+
+    except ValueError as error:
+
+        db.session.rollback()
+
+        flash(
+            str(error),
+            "error"
+        )
+
+    return redirect(
+        url_for(
+            "applications.application_detail",
+            application_id=application.id
+        )
+    )
+
+#pipeline routes reject
+@applications_bp.route(
+    "/<int:application_id>/reject",
+    methods=["POST"]
+)
+@role_required("recruiter")
+def reject(application_id):
+
+    application = db.session.get(
+        Application,
+        application_id
+    )
+
+    if not application:
+        abort(404)
+
+    try:
+
+        reject_application(
+            application,
+            current_user.id
+        )
+
+        db.session.commit()
+
+        flash(
+            "Application rejected.",
+            "success"
+        )
+
+    except ValueError as error:
+
+        db.session.rollback()
+
+        flash(
+            str(error),
+            "error"
+        )
+
+    return redirect(
+        url_for(
+            "applications.application_detail",
+            application_id=application.id
+        )
+    )
+
+#pipeline routes reinstate
+@applications_bp.route(
+    "/<int:application_id>/reinstate",
+    methods=["POST"]
+)
+@role_required("recruiter")
+def reinstate(application_id):
+
+    application = db.session.get(
+        Application,
+        application_id
+    )
+
+    if not application:
+        abort(404)
+
+    try:
+
+        reinstate_application(
+            application,
+            current_user.id
+        )
+
+        db.session.commit()
+
+        flash(
+            "Application reinstated successfully.",
+            "success"
+        )
+
+    except ValueError as error:
+
+        db.session.rollback()
+
+        flash(
+            str(error),
+            "error"
+        )
+
+    return redirect(
+        url_for(
+            "applications.application_detail",
+            application_id=application.id
+        )
+    )
+

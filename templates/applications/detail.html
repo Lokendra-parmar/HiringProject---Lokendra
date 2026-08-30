@@ -75,6 +75,110 @@ Candidate Details
 
 </div>
 
+<div class="detail-card">
+
+    <h2>Pipeline</h2>
+
+    <div class="pipeline">
+
+        {% for stage in ["Applied", "Screening", "Interview", "Offer", "Hired"] %}
+
+            <div
+                class="pipeline-stage
+                {% if application.stage == stage %}
+                    current
+                {% endif %}"
+            >
+
+                {{ stage }}
+
+            </div>
+
+            {% if not loop.last %}
+
+                <span class="pipeline-arrow">
+                    →
+                </span>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+
+    <div class="pipeline-actions">
+
+        {% if application.stage != "Rejected"
+              and application.stage != "Hired" %}
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'applications.advance',
+                    application_id=application.id
+                ) }}"
+            >
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Advance to Next Stage
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+        {% if application.stage != "Rejected"
+              and application.stage != "Hired" %}
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'applications.reject',
+                    application_id=application.id
+                ) }}"
+            >
+
+                <button
+                    type="submit"
+                    class="btn-danger"
+                >
+                    Reject
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+        {% if application.stage == "Rejected" %}
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'applications.reinstate',
+                    application_id=application.id
+                ) }}"
+            >
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Reinstate
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+</div>
 
 <div class="detail-card">
 
