@@ -21,8 +21,19 @@ def create_app():
         return db.session.get(User, int(user_id))
 
     from routes.auth import auth_bp
+    from routes.dashboard import dashboard_bp
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(dashboard_bp)
+
+    from models import (
+        User,
+        JobOpening,
+        Application,
+        ApplicationInterviewer,
+        Feedback,
+        ApplicationEvent
+    )
 
     return app
 
