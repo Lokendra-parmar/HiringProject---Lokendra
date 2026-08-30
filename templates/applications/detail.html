@@ -77,6 +77,117 @@ Candidate Details
 
 <div class="detail-card">
 
+    <h2>Interview Panel</h2>
+
+    {% if application.interviewer_assignments %}
+
+        {% for assignment in application.interviewer_assignments %}
+
+            <div class="panel-member">
+
+                <div>
+
+                    <strong>
+                        {{ assignment.interviewer.name }}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                        {{ assignment.interviewer.email }}
+                    </small>
+
+                </div>
+
+
+                {% if current_user.role == "recruiter" %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'interviews.remove_interviewer',
+                            application_id=application.id,
+                            interviewer_id=assignment.interviewer_id
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="small-btn danger"
+                        >
+                            Remove
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>
+            No interviewers assigned yet.
+        </p>
+
+    {% endif %}
+
+
+    {% if current_user.role == "recruiter" %}
+
+        <hr>
+
+        <h3>Assign Interviewer</h3>
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'interviews.assign_interviewer',
+                application_id=application.id
+            ) }}"
+        >
+
+            <div class="form-group">
+
+                <select
+                    name="interviewer_id"
+                    required
+                >
+
+                    <option value="">
+                        Select interviewer
+                    </option>
+
+                    {% for user in interviewers %}
+
+                        <option value="{{ user.id }}">
+                            {{ user.name }}
+                            ({{ user.email }})
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Assign Interviewer
+            </button>
+
+        </form>
+
+    {% endif %}
+
+</div>
+
+<div class="detail-card">
+
     <h2>Pipeline</h2>
 
     <div class="pipeline">
@@ -237,5 +348,93 @@ Candidate Details
     {% endif %}
 
 </div>
+
+
+
+
+<div class="detail-card">
+
+    <h2>Interviewer Feedback</h2>
+
+    {% if application.feedback_entries %}
+
+        {% for feedback in application.feedback_entries %}
+
+            <div class="feedback-item">
+
+                <strong>
+                    {{ feedback.interviewer.name }}
+                </strong>
+
+                <p>
+                    {{ feedback.content }}
+                </p>
+
+                {% if feedback.created_at %}
+
+                    <small>
+                        {{ feedback.created_at.strftime(
+                            "%d %b %Y %H:%M"
+                        ) }}
+                    </small>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>
+            No feedback has been submitted yet.
+        </p>
+
+    {% endif %}
+
+
+    {% if current_user.role == "interviewer" %}
+
+        <hr>
+
+        <h3>Add Interview Feedback</h3>
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'interviews.add_feedback',
+                application_id=application.id
+            ) }}"
+        >
+
+            <div class="form-group">
+
+                <label for="feedback">
+                    Your Feedback
+                </label>
+
+                <textarea
+                    id="feedback"
+                    name="content"
+                    rows="6"
+                    placeholder="Enter interview feedback..."
+                    required
+                ></textarea>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Submit Feedback
+            </button>
+
+        </form>
+
+    {% endif %}
+
+</div>
+
 
 {% endblock %}

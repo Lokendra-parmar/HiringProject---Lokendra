@@ -13,6 +13,7 @@ from flask_login import current_user
 from extensions import db
 from models.application import Application
 from models.job import JobOpening
+from models.user import User
 from utils.decorators import role_required
 from utils.application_helpers import create_application_event
 
@@ -190,9 +191,31 @@ def application_detail(application_id):
     if not application:
         abort(404)
 
+    if current_user.role == "interviewer":
+
+        from utils.interviewer import is_assigned_interviewer
+
+        if not is_assigned_interviewer(
+            application.id,
+            current_user.id
+        ):
+            abort(403)
+
+    interviewers = []
+
+    if current_user.role == "recruiter":
+
+        interviewers = (
+            User.query
+            .filter_by(role="interviewer")
+            .order_by(User.name)
+            .all()
+        )
+
     return render_template(
         "applications/detail.html",
-        application=application
+        application=application,
+        interviewers=interviewers
     )
 
 

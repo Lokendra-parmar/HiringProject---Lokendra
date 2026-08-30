@@ -92,3 +92,11 @@
 </body>
 
 </html>
+
+{% if current_user.role == "interviewer" %}
+
+    <a href="{{ url_for('interviews.my_applications') }}">
+        My Interviews
+    </a>
+
+{% endif %}

@@ -297,3 +297,21 @@ th {
     color: white;
     cursor: pointer;
 }
+
+
+.panel-member {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.feedback-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.feedback-item p {
+    margin: 8px 0;
+}

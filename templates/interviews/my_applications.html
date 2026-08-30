@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Interviews
+{% endblock %}
+
+{% block content %}
+
+<h1>My Assigned Applications</h1>
+
+<p>
+    These are the candidates assigned to you for interview.
+</p>
+
+
+{% if applications %}
+
+<table>
+
+    <thead>
+
+        <tr>
+            <th>Candidate</th>
+            <th>Job</th>
+            <th>Stage</th>
+            <th>Applied</th>
+            <th>Action</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for application in applications %}
+
+        <tr>
+
+            <td>
+                {{ application.candidate_name }}
+            </td>
+
+            <td>
+                {{ application.job.title }}
+            </td>
+
+            <td>
+                <span class="status">
+                    {{ application.stage }}
+                </span>
+            </td>
+
+            <td>
+
+                {% if application.applied_at %}
+
+                    {{ application.applied_at.strftime(
+                        "%d %b %Y"
+                    ) }}
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <a
+                    href="{{ url_for(
+                        'applications.application_detail',
+                        application_id=application.id
+                    ) }}"
+                    class="small-btn"
+                >
+                    View
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<div class="empty-state">
+
+    <h3>No assignments</h3>
+
+    <p>
+        You currently have no applications assigned to you.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
