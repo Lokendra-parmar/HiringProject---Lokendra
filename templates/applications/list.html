@@ -9,11 +9,13 @@ Applications
 <div class="page-header">
 
     <div>
+
         <h1>Applications</h1>
 
         <p>
-            Manage candidates in the hiring pipeline.
+            Search and manage candidates in the hiring pipeline.
         </p>
+
     </div>
 
     <a
@@ -26,13 +28,252 @@ Applications
 </div>
 
 
+<!-- SEARCH & FILTERS -->
+
+<div class="filter-card">
+
+    <form
+        method="GET"
+        action="{{ url_for('applications.application_list') }}"
+    >
+
+        <div class="filter-grid">
+
+            <!-- Search -->
+
+            <div class="form-group">
+
+                <label for="search">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    id="search"
+                    name="search"
+                    value="{{ search }}"
+                    placeholder="Name or email"
+                >
+
+            </div>
+
+
+            <!-- Stage -->
+
+            <div class="form-group">
+
+                <label for="stage">
+                    Stage
+                </label>
+
+                <select
+                    id="stage"
+                    name="stage"
+                >
+
+                    <option value="">
+                        All stages
+                    </option>
+
+                    {% for item in stages %}
+
+                        <option
+                            value="{{ item }}"
+                            {% if selected_stage == item %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ item }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- Job -->
+
+            <div class="form-group">
+
+                <label for="job_id">
+                    Job Opening
+                </label>
+
+                <select
+                    id="job_id"
+                    name="job_id"
+                >
+
+                    <option value="">
+                        All jobs
+                    </option>
+
+                    {% for job in jobs %}
+
+                        <option
+                            value="{{ job.id }}"
+                            {% if selected_job|string == job.id|string %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ job.title }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- Source -->
+
+            <div class="form-group">
+
+                <label for="source">
+                    Source
+                </label>
+
+                <select
+                    id="source"
+                    name="source"
+                >
+
+                    <option value="">
+                        All sources
+                    </option>
+
+                    {% for item in sources %}
+
+                        <option
+                            value="{{ item }}"
+                            {% if selected_source == item %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ item }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- Sort -->
+
+            <div class="form-group">
+
+                <label for="sort">
+                    Sort
+                </label>
+
+                <select
+                    id="sort"
+                    name="sort"
+                >
+
+                    <option
+                        value="newest"
+                        {% if selected_sort == "newest" %}
+                            selected
+                        {% endif %}
+                    >
+                        Newest first
+                    </option>
+
+                    <option
+                        value="oldest"
+                        {% if selected_sort == "oldest" %}
+                            selected
+                        {% endif %}
+                    >
+                        Oldest first
+                    </option>
+
+                    <option
+                        value="name_asc"
+                        {% if selected_sort == "name_asc" %}
+                            selected
+                        {% endif %}
+                    >
+                        Name A-Z
+                    </option>
+
+                    <option
+                        value="name_desc"
+                        {% if selected_sort == "name_desc" %}
+                            selected
+                        {% endif %}
+                    >
+                        Name Z-A
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div class="filter-actions">
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Apply Filters
+            </button>
+
+            <a
+                href="{{ url_for('applications.application_list') }}"
+                class="btn-secondary"
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- RESULTS -->
+
 {% if applications %}
+
+<div class="results-info">
+
+    Showing
+    <strong>
+        {{ pagination.first }}
+    </strong>
+    -
+    <strong>
+        {{ pagination.last }}
+    </strong>
+
+    of
+
+    <strong>
+        {{ pagination.total }}
+    </strong>
+
+    applications.
+
+</div>
+
 
 <table>
 
     <thead>
 
         <tr>
+
             <th>Candidate</th>
             <th>Email</th>
             <th>Job</th>
@@ -40,9 +281,11 @@ Applications
             <th>Stage</th>
             <th>Applied</th>
             <th>Action</th>
+
         </tr>
 
     </thead>
+
 
     <tbody>
 
@@ -67,15 +310,21 @@ Applications
             </td>
 
             <td>
+
                 <span class="status">
                     {{ application.stage }}
                 </span>
+
             </td>
 
             <td>
 
                 {% if application.applied_at %}
-                    {{ application.applied_at.strftime("%d %b %Y") }}
+
+                    {{ application.applied_at.strftime(
+                        "%d %b %Y"
+                    ) }}
+
                 {% endif %}
 
             </td>
@@ -102,15 +351,79 @@ Applications
 
 </table>
 
+
+<!-- PAGINATION -->
+
+<div class="pagination">
+
+    {% if pagination.has_prev %}
+
+        <a
+            href="{{ url_for(
+                'applications.application_list',
+                page=pagination.prev_num,
+                search=search,
+                stage=selected_stage,
+                job_id=selected_job,
+                source=selected_source,
+                sort=selected_sort
+            ) }}"
+            class="small-btn"
+        >
+            ← Previous
+        </a>
+
+    {% endif %}
+
+
+    <span>
+
+        Page
+        {{ pagination.page }}
+        of
+        {{ pagination.pages }}
+
+    </span>
+
+
+    {% if pagination.has_next %}
+
+        <a
+            href="{{ url_for(
+                'applications.application_list',
+                page=pagination.next_num,
+                search=search,
+                stage=selected_stage,
+                job_id=selected_job,
+                source=selected_source,
+                sort=selected_sort
+            ) }}"
+            class="small-btn"
+        >
+            Next →
+        </a>
+
+    {% endif %}
+
+</div>
+
+
 {% else %}
 
 <div class="empty-state">
 
-    <h3>No applications yet</h3>
+    <h3>No applications found</h3>
 
     <p>
-        Add your first candidate.
+        Try changing your search or filters.
     </p>
+
+    <a
+        href="{{ url_for('applications.application_list') }}"
+        class="btn"
+    >
+        Clear Filters
+    </a>
 
 </div>
 

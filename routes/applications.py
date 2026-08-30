@@ -14,6 +14,9 @@ from extensions import db
 from models.application import Application
 from models.job import JobOpening
 from models.user import User
+
+from sqlalchemy import or_
+
 from utils.decorators import role_required
 from utils.application_helpers import create_application_event
 
@@ -36,15 +39,188 @@ applications_bp = Blueprint(
 @role_required("recruiter")
 def application_list():
 
-    applications = (
-        Application.query
-        .order_by(Application.applied_at.desc())
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    stage = request.args.get(
+        "stage",
+        ""
+    ).strip()
+
+    job_id = request.args.get(
+        "job_id",
+        ""
+    ).strip()
+
+    source = request.args.get(
+        "source",
+        ""
+    ).strip()
+
+    sort = request.args.get(
+        "sort",
+        "newest"
+    ).strip()
+
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
+
+    if page < 1:
+        page = 1
+
+    query = Application.query
+
+    # -------------------------
+    # SEARCH
+    # -------------------------
+
+    if search:
+
+        search_pattern = f"%{search}%"
+
+        query = query.filter(
+            or_(
+                Application.candidate_name.ilike(
+                    search_pattern
+                ),
+                Application.candidate_email.ilike(
+                    search_pattern
+                )
+            )
+        )
+
+    # -------------------------
+    # FILTER BY STAGE
+    # -------------------------
+
+    if stage:
+
+        query = query.filter(
+            Application.stage == stage
+        )
+
+    # -------------------------
+    # FILTER BY JOB
+    # -------------------------
+
+    if job_id:
+
+        try:
+            job_id_int = int(job_id)
+
+            query = query.filter(
+                Application.job_opening_id ==
+                job_id_int
+            )
+
+        except ValueError:
+            job_id = ""
+
+    # -------------------------
+    # FILTER BY SOURCE
+    # -------------------------
+
+    if source:
+
+        query = query.filter(
+            Application.source == source
+        )
+
+    # -------------------------
+    # SORTING
+    # -------------------------
+
+    if sort == "oldest":
+
+        query = query.order_by(
+            Application.applied_at.asc()
+        )
+
+    elif sort == "name_asc":
+
+        query = query.order_by(
+            Application.candidate_name.asc()
+        )
+
+    elif sort == "name_desc":
+
+        query = query.order_by(
+            Application.candidate_name.desc()
+        )
+
+    else:
+
+        # Default = newest
+        sort = "newest"
+
+        query = query.order_by(
+            Application.applied_at.desc()
+        )
+
+    # -------------------------
+    # PAGINATION
+    # -------------------------
+
+    pagination = query.paginate(
+        page=page,
+        per_page=10,
+        error_out=False
+    )
+
+    applications = pagination.items
+
+    jobs = (
+        JobOpening.query
+        .order_by(JobOpening.title)
         .all()
     )
 
+    sources = (
+        db.session.query(
+            Application.source
+        )
+        .filter(
+            Application.source.isnot(None),
+            Application.source != ""
+        )
+        .distinct()
+        .order_by(
+            Application.source
+        )
+        .all()
+    )
+
+    sources = [
+        item[0]
+        for item in sources
+    ]
+
+    stages = [
+        "Applied",
+        "Screening",
+        "Interview",
+        "Offer",
+        "Hired",
+        "Rejected"
+    ]
+
     return render_template(
         "applications/list.html",
-        applications=applications
+        applications=applications,
+        pagination=pagination,
+        jobs=jobs,
+        stages=stages,
+        sources=sources,
+        search=search,
+        selected_stage=stage,
+        selected_job=job_id,
+        selected_source=source,
+        selected_sort=sort
     )
 
 
