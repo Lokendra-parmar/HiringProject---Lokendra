@@ -12,7 +12,8 @@ class Application(db.Model):
     job_opening_id = db.Column(
         db.Integer,
         db.ForeignKey("job_openings.id"),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     candidate_name = db.Column(
@@ -39,7 +40,8 @@ class Application(db.Model):
     stage = db.Column(
         db.String(30),
         nullable=False,
-        default="Applied"
+        default="Applied",
+        index=True
     )
 
     applied_at = db.Column(

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}
+Applications
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>Applications</h1>
+
+        <p>
+            Manage candidates in the hiring pipeline.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('applications.create_application') }}"
+        class="btn"
+    >
+        Add Candidate
+    </a>
+
+</div>
+
+
+{% if applications %}
+
+<table>
+
+    <thead>
+
+        <tr>
+            <th>Candidate</th>
+            <th>Email</th>
+            <th>Job</th>
+            <th>Source</th>
+            <th>Stage</th>
+            <th>Applied</th>
+            <th>Action</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for application in applications %}
+
+        <tr>
+
+            <td>
+                {{ application.candidate_name }}
+            </td>
+
+            <td>
+                {{ application.candidate_email }}
+            </td>
+
+            <td>
+                {{ application.job.title }}
+            </td>
+
+            <td>
+                {{ application.source or "-" }}
+            </td>
+
+            <td>
+                <span class="status">
+                    {{ application.stage }}
+                </span>
+            </td>
+
+            <td>
+
+                {% if application.applied_at %}
+                    {{ application.applied_at.strftime("%d %b %Y") }}
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <a
+                    href="{{ url_for(
+                        'applications.application_detail',
+                        application_id=application.id
+                    ) }}"
+                    class="small-btn"
+                >
+                    View
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<div class="empty-state">
+
+    <h3>No applications yet</h3>
+
+    <p>
+        Add your first candidate.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -12,7 +12,8 @@ class ApplicationEvent(db.Model):
     application_id = db.Column(
         db.Integer,
         db.ForeignKey("applications.id"),
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     event_type = db.Column(

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Candidate
+{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <h1>Add Candidate</h1>
+
+    <form method="POST">
+
+        <div class="form-group">
+
+            <label for="candidate_name">
+                Candidate Name
+            </label>
+
+            <input
+                type="text"
+                id="candidate_name"
+                name="candidate_name"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="candidate_email">
+                Candidate Email
+            </label>
+
+            <input
+                type="email"
+                id="candidate_email"
+                name="candidate_email"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="job_opening_id">
+                Job Opening
+            </label>
+
+            <select
+                id="job_opening_id"
+                name="job_opening_id"
+                required
+            >
+
+                <option value="">
+                    Select a job
+                </option>
+
+                {% for job in jobs %}
+
+                <option value="{{ job.id }}">
+
+                    {{ job.title }}
+                    -
+                    {{ job.department }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="source">
+                Source
+            </label>
+
+            <select
+                id="source"
+                name="source"
+            >
+
+                <option value="">
+                    Select source
+                </option>
+
+                <option value="LinkedIn">
+                    LinkedIn
+                </option>
+
+                <option value="Referral">
+                    Referral
+                </option>
+
+                <option value="Company Website">
+                    Company Website
+                </option>
+
+                <option value="Internshala">
+                    Internshala
+                </option>
+
+                <option value="Job Portal">
+                    Job Portal
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="notes">
+                Notes
+            </label>
+
+            <textarea
+                id="notes"
+                name="notes"
+                rows="6"
+            ></textarea>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Add Candidate
+            </button>
+
+            <a
+                href="{{ url_for('applications.application_list') }}"
+                class="btn-secondary"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

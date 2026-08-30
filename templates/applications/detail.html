@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}
+Candidate Details
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            {{ application.candidate_name }}
+        </h1>
+
+        <p>
+            {{ application.candidate_email }}
+        </p>
+
+    </div>
+
+    {% if current_user.role == "recruiter" %}
+
+        <a
+            href="{{ url_for(
+                'applications.edit_application',
+                application_id=application.id
+            ) }}"
+            class="btn"
+        >
+            Edit
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<div class="detail-card">
+
+    <h2>Application Information</h2>
+
+    <p>
+        <strong>Job:</strong>
+        {{ application.job.title }}
+    </p>
+
+    <p>
+        <strong>Department:</strong>
+        {{ application.job.department }}
+    </p>
+
+    <p>
+        <strong>Source:</strong>
+        {{ application.source or "-" }}
+    </p>
+
+    <p>
+        <strong>Current Stage:</strong>
+
+        <span class="status">
+            {{ application.stage }}
+        </span>
+
+    </p>
+
+    <p>
+        <strong>Notes:</strong>
+    </p>
+
+    <p>
+        {{ application.notes or "No notes available." }}
+    </p>
+
+</div>
+
+
+<div class="detail-card">
+
+    <h2>Application History</h2>
+
+    {% if application.events %}
+
+        <div class="timeline">
+
+            {% for event in application.events %}
+
+                <div class="timeline-item">
+
+                    <strong>
+                        {{ event.event_type.replace("_", " ") }}
+                    </strong>
+
+                    {% if event.old_stage and event.new_stage %}
+
+                        <p>
+                            {{ event.old_stage }}
+                            →
+                            {{ event.new_stage }}
+                        </p>
+
+                    {% endif %}
+
+                    {% if event.message %}
+
+                        <p>
+                            {{ event.message }}
+                        </p>
+
+                    {% endif %}
+
+                    {% if event.created_at %}
+
+                        <small>
+                            {{ event.created_at.strftime(
+                                "%d %b %Y %H:%M"
+                            ) }}
+                        </small>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <p>No history available.</p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
