@@ -437,3 +437,29 @@ canvas {
     }
 
 }
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.bulk-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.bulk-success {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    background: #ddf7e5;
+}
+
+.bulk-failure {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    background: #ffe1e1;
+    color: #a40000;
+}

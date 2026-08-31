@@ -26,7 +26,10 @@ from utils.pipeline import (
     reject_application,
     reinstate_application
 )
-
+# for csv export or reject 
+import csv
+import io
+from flask import Response
 
 applications_bp = Blueprint(
     "applications",
@@ -629,3 +632,310 @@ def reinstate(application_id):
         )
     )
 
+@applications_bp.route(
+    "/bulk/advance",
+    methods=["POST"]
+)
+@role_required("recruiter")
+def bulk_advance():
+
+    application_ids = request.form.getlist(
+        "application_ids"
+    )
+
+    if not application_ids:
+        flash(
+            "Please select at least one application.",
+            "error"
+        )
+
+        return redirect(
+            url_for("applications.application_list")
+        )
+
+    results = []
+
+    for application_id in application_ids:
+
+        try:
+
+            application = db.session.get(
+                Application,
+                int(application_id)
+            )
+
+            if not application:
+
+                results.append({
+                    "candidate": f"Application #{application_id}",
+                    "success": False,
+                    "message": "Application not found."
+                })
+
+                continue
+
+            old_stage = application.stage
+
+            try:
+
+                advance_application(
+                    application,
+                    current_user.id
+                )
+
+                db.session.commit()
+
+                results.append({
+                    "candidate": application.candidate_name,
+                    "success": True,
+                    "message": (
+                        f"{old_stage} → {application.stage}"
+                    )
+                })
+
+            except ValueError as error:
+
+                db.session.rollback()
+
+                results.append({
+                    "candidate": application.candidate_name,
+                    "success": False,
+                    "message": str(error)
+                })
+
+        except (ValueError, TypeError):
+
+            db.session.rollback()
+
+            results.append({
+                "candidate": str(application_id),
+                "success": False,
+                "message": "Invalid application ID."
+            })
+
+    return render_template(
+        "applications/bulk_results.html",
+        title="Bulk Advance Results",
+        results=results
+    )
+
+@applications_bp.route(
+    "/bulk/reject",
+    methods=["POST"]
+)
+@role_required("recruiter")
+def bulk_reject():
+
+    application_ids = request.form.getlist(
+        "application_ids"
+    )
+
+    if not application_ids:
+
+        flash(
+            "Please select at least one application.",
+            "error"
+        )
+
+        return redirect(
+            url_for("applications.application_list")
+        )
+
+    results = []
+
+    for application_id in application_ids:
+
+        try:
+
+            application = db.session.get(
+                Application,
+                int(application_id)
+            )
+
+            if not application:
+
+                results.append({
+                    "candidate": f"Application #{application_id}",
+                    "success": False,
+                    "message": "Application not found."
+                })
+
+                continue
+
+            old_stage = application.stage
+
+            try:
+
+                reject_application(
+                    application,
+                    current_user.id
+                )
+
+                db.session.commit()
+
+                results.append({
+                    "candidate": application.candidate_name,
+                    "success": True,
+                    "message": (
+                        f"Rejected from {old_stage}"
+                    )
+                })
+
+            except ValueError as error:
+
+                db.session.rollback()
+
+                results.append({
+                    "candidate": application.candidate_name,
+                    "success": False,
+                    "message": str(error)
+                })
+
+        except (ValueError, TypeError):
+
+            db.session.rollback()
+
+            results.append({
+                "candidate": str(application_id),
+                "success": False,
+                "message": "Invalid application ID."
+            })
+
+    return render_template(
+        "applications/bulk_results.html",
+        title="Bulk Reject Results",
+        results=results
+    )
+
+@applications_bp.route("/export")
+@role_required("recruiter")
+def export_csv():
+
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    stage = request.args.get(
+        "stage",
+        ""
+    ).strip()
+
+    job_id = request.args.get(
+        "job_id",
+        ""
+    ).strip()
+
+    source = request.args.get(
+        "source",
+        ""
+    ).strip()
+
+    query = Application.query
+
+    # Search
+    if search:
+
+        search_pattern = f"%{search}%"
+
+        query = query.filter(
+            or_(
+                Application.candidate_name.ilike(
+                    search_pattern
+                ),
+                Application.candidate_email.ilike(
+                    search_pattern
+                )
+            )
+        )
+
+    # Stage
+    if stage:
+
+        query = query.filter(
+            Application.stage == stage
+        )
+
+    # Job
+    if job_id:
+
+        try:
+
+            query = query.filter(
+                Application.job_opening_id ==
+                int(job_id)
+            )
+
+        except ValueError:
+            pass
+
+    # Source
+    if source:
+
+        query = query.filter(
+            Application.source == source
+        )
+
+    applications = (
+        query
+        .order_by(
+            Application.applied_at.desc()
+        )
+        .all()
+    )
+
+    output = io.StringIO()
+
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Candidate Name",
+        "Candidate Email",
+        "Job Opening",
+        "Department",
+        "Source",
+        "Stage",
+        "Applied Date",
+        "Last Updated"
+    ])
+
+    for application in applications:
+
+        writer.writerow([
+            application.candidate_name,
+            application.candidate_email,
+            application.job.title,
+            application.job.department,
+            application.source or "",
+            application.stage,
+
+            (
+                application.applied_at.strftime(
+                    "%Y-%m-%d %H:%M"
+                )
+                if application.applied_at
+                else ""
+            ),
+
+            (
+                application.updated_at.strftime(
+                    "%Y-%m-%d %H:%M"
+                )
+                if application.updated_at
+                else ""
+            )
+        ])
+
+    response = Response(
+        output.getvalue(),
+        mimetype="text/csv"
+    )
+
+    response.headers[
+        "Content-Disposition"
+    ] = (
+        "attachment; "
+        "filename=hiring_pipeline.csv"
+    )
+
+    return response

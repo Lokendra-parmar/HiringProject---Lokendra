@@ -19,6 +19,18 @@ Applications
     </div>
 
     <a
+        href="{{ url_for(
+            'applications.export_csv',
+            search=search,
+            stage=selected_stage,
+            job_id=selected_job,
+            source=selected_source
+        ) }}"
+        class="btn-secondary"
+    >
+        Export CSV
+    </a>
+    <a
         href="{{ url_for('applications.create_application') }}"
         class="btn"
     >
@@ -285,13 +297,49 @@ Applications
 
 </div>
 
+<form
+    id="bulk-form"
+    method="POST"
+>
 
+<div class="bulk-actions">
+
+    <button
+        type="submit"
+        class="btn"
+        formaction="{{ url_for(
+            'applications.bulk_advance'
+        ) }}"
+    >
+        Advance Selected
+    </button>
+
+
+    <button
+        type="submit"
+        class="btn-danger"
+        formaction="{{ url_for(
+            'applications.bulk_reject'
+        ) }}"
+        onclick="return confirm(
+            'Reject selected applications?'
+        )"
+    >
+        Reject Selected
+    </button>
+
+</div>
 <table>
 
     <thead>
 
         <tr>
-
+            <th>
+                <input
+                    type="checkbox"
+                    id="select-all"
+                >
+            </th>
             <th>Candidate</th>
             <th>Email</th>
             <th>Job</th>
@@ -310,6 +358,16 @@ Applications
         {% for application in applications %}
 
         <tr>
+            <td>
+
+                <input
+                    type="checkbox"
+                    name="application_ids"
+                    value="{{ application.id }}"
+                    class="application-checkbox"
+                >
+
+            </td>            
 
             <td>
                 {{ application.candidate_name }}
@@ -368,7 +426,7 @@ Applications
     </tbody>
 
 </table>
-
+</form>
 
 <!-- PAGINATION -->
 
@@ -447,4 +505,36 @@ Applications
 
 {% endif %}
 
+<script>
+
+    const selectAll =
+        document.getElementById("select-all");
+
+    const checkboxes =
+        document.querySelectorAll(
+            ".application-checkbox"
+        );
+
+
+    if (selectAll) {
+
+        selectAll.addEventListener(
+            "change",
+            function () {
+
+                checkboxes.forEach(
+                    function (checkbox) {
+
+                        checkbox.checked =
+                            selectAll.checked;
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+</script>
 {% endblock %}
