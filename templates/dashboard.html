@@ -1,34 +1,293 @@
 {% extends "base.html" %}
 
-
 {% block title %}
-Dashboard - Hiring Pipeline
+Dashboard
 {% endblock %}
 
 
 {% block content %}
 
-    <h1>Dashboard</h1>
+{% if interviewer_view %}
 
-    <p>
-        Welcome,
-        <strong>{{ current_user.name }}</strong>
-    </p>
+    <div class="page-header">
 
-    <p>
-        Your role:
-        <strong>{{ current_user.role }}</strong>
-    </p>
+        <div>
+            <h1>Dashboard</h1>
 
-    {% if current_user.role == "recruiter" %}
+            <p>
+                Welcome,
+                <strong>{{ current_user.name }}</strong>
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="detail-card">
+
+        <h2>Interviewer Workspace</h2>
+
+        <p>
+            View candidates assigned to your interview panel
+            and submit feedback.
+        </p>
 
         <a
+            href="{{ url_for('interviews.my_applications') }}"
             class="btn"
-            href="{{ url_for('jobs.job_list') }}"
         >
-            Manage Job Openings
+            View My Interviews
         </a>
 
-    {% endif %}
+    </div>
+
+
+{% else %}
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>Recruiting Dashboard</h1>
+
+            <p>
+                Overview of the current hiring pipeline.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- HEADLINE METRICS -->
+
+    <div class="metric-grid">
+
+        <div class="metric-card">
+
+            <div class="metric-value">
+                {{ open_positions }}
+            </div>
+
+            <div class="metric-label">
+                Open Positions
+            </div>
+
+        </div>
+
+
+        <div class="metric-card">
+
+            <div class="metric-value">
+                {{ active_applications }}
+            </div>
+
+            <div class="metric-label">
+                Active Applications
+            </div>
+
+        </div>
+
+
+        <div class="metric-card">
+
+            <div class="metric-value">
+                {{ interviews_this_week }}
+            </div>
+
+            <div class="metric-label">
+                Interviews This Week
+            </div>
+
+        </div>
+
+
+        <div class="metric-card">
+
+            <div class="metric-value">
+                {{ hires_this_month }}
+            </div>
+
+            <div class="metric-label">
+                Hires This Month
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- APPLICATIONS BY STAGE -->
+
+    <div class="dashboard-grid">
+
+        <div class="detail-card">
+
+            <h2>Applications by Stage</h2>
+
+            <div class="stage-breakdown">
+
+                {% for stage in [
+                    "Applied",
+                    "Screening",
+                    "Interview",
+                    "Offer",
+                    "Hired",
+                    "Rejected"
+                ] %}
+
+                    <div class="breakdown-row">
+
+                        <span>
+                            {{ stage }}
+                        </span>
+
+                        <strong>
+                            {{ stage_counts.get(stage, 0) }}
+                        </strong>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- APPLICATIONS BY JOB -->
+
+        <div class="detail-card">
+
+            <h2>Applications by Job Opening</h2>
+
+            <canvas id="jobChart"></canvas>
+
+        </div>
+
+    </div>
+
+
+    <!-- WEEKLY APPLICATIONS -->
+
+    <div class="detail-card">
+
+        <h2>
+            Applications Received per Week
+        </h2>
+
+        <p class="chart-description">
+            Last 90 days
+        </p>
+
+        <canvas id="weeklyChart"></canvas>
+
+    </div>
+
+
+    <!-- CHART DATA -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+        const jobLabels =
+            {{ job_labels | tojson }};
+
+        const jobCounts =
+            {{ job_counts | tojson }};
+
+        const weeklyLabels =
+            {{ weekly_labels | tojson }};
+
+        const weeklyValues =
+            {{ weekly_values | tojson }};
+
+
+        new Chart(
+            document.getElementById("jobChart"),
+            {
+                type: "bar",
+
+                data: {
+
+                    labels: jobLabels,
+
+                    datasets: [
+                        {
+                            label: "Applications",
+                            data: jobCounts
+                        }
+                    ]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+
+                    scales: {
+
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+
+                    }
+
+                }
+            }
+        );
+
+
+        new Chart(
+            document.getElementById("weeklyChart"),
+            {
+                type: "line",
+
+                data: {
+
+                    labels: weeklyLabels,
+
+                    datasets: [
+                        {
+                            label: "Applications",
+                            data: weeklyValues,
+                            tension: 0.2
+                        }
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    scales: {
+
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+
+                    }
+
+                }
+            }
+        );
+
+    </script>
+
+
+{% endif %}
 
 {% endblock %}

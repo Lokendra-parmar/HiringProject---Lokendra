@@ -38,8 +38,10 @@ def create_app():
         Application,
         ApplicationInterviewer,
         Feedback,
+        InterviewSchedule,
         ApplicationEvent
     )
+    
 
     return app
 

@@ -16,12 +16,13 @@ from models.application import Application
 from models.user import User
 from models.interview import (
     ApplicationInterviewer,
-    Feedback
+    Feedback,
+    InterviewSchedule
 )
 
 from utils.decorators import role_required
 from utils.interviewer import is_assigned_interviewer
-
+from datetime import datetime
 
 interviews_bp = Blueprint(
     "interviews",
@@ -252,6 +253,87 @@ def add_feedback(application_id):
 
     flash(
         "Feedback added successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for(
+            "applications.application_detail",
+            application_id=application.id
+        )
+    )
+
+@interviews_bp.route(
+    "/<int:application_id>/schedule",
+    methods=["POST"]
+)
+@role_required("recruiter")
+def schedule_interview(application_id):
+
+    application = db.session.get(
+        Application,
+        application_id
+    )
+
+    if not application:
+        abort(404)
+
+    scheduled_at = request.form.get(
+        "scheduled_at",
+        ""
+    ).strip()
+
+    notes = request.form.get(
+        "notes",
+        ""
+    ).strip()
+
+    if not scheduled_at:
+        flash(
+            "Interview date and time are required.",
+            "error"
+        )
+
+        return redirect(
+            url_for(
+                "applications.application_detail",
+                application_id=application.id
+            )
+        )
+
+    try:
+
+        interview_datetime = datetime.strptime(
+            scheduled_at,
+            "%Y-%m-%dT%H:%M"
+        )
+
+    except ValueError:
+
+        flash(
+            "Invalid interview date or time.",
+            "error"
+        )
+
+        return redirect(
+            url_for(
+                "applications.application_detail",
+                application_id=application.id
+            )
+        )
+
+    interview = InterviewSchedule(
+        application_id=application.id,
+        scheduled_at=interview_datetime,
+        notes=notes,
+        created_by=current_user.id
+    )
+
+    db.session.add(interview)
+    db.session.commit()
+
+    flash(
+        "Interview scheduled successfully.",
         "success"
     )
 

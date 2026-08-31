@@ -188,6 +188,101 @@ Candidate Details
 
 <div class="detail-card">
 
+    <h2>Scheduled Interviews</h2>
+
+
+    {% if application.scheduled_interviews %}
+
+        {% for interview in application.scheduled_interviews %}
+
+            <div class="interview-item">
+
+                <strong>
+                    {{ interview.scheduled_at.strftime(
+                        "%d %b %Y, %I:%M %p"
+                    ) }}
+                </strong>
+
+                {% if interview.notes %}
+
+                    <p>
+                        {{ interview.notes }}
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No interviews scheduled.</p>
+
+    {% endif %}
+
+
+    {% if current_user.role == "recruiter" %}
+
+        <hr>
+
+        <h3>Schedule Interview</h3>
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'interviews.schedule_interview',
+                application_id=application.id
+            ) }}"
+        >
+
+            <div class="form-group">
+
+                <label for="scheduled_at">
+                    Date & Time
+                </label>
+
+                <input
+                    type="datetime-local"
+                    id="scheduled_at"
+                    name="scheduled_at"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="interview_notes">
+                    Notes
+                </label>
+
+                <textarea
+                    id="interview_notes"
+                    name="notes"
+                    rows="3"
+                    placeholder="Technical interview, Google Meet, etc."
+                ></textarea>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Schedule Interview
+            </button>
+
+        </form>
+
+    {% endif %}
+
+</div>
+
+<div class="detail-card">
+
     <h2>Pipeline</h2>
 
     <div class="pipeline">

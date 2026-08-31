@@ -141,6 +141,18 @@ def application_list():
             Application.applied_at.asc()
         )
 
+    elif sort == "stage":
+
+        query = query.order_by(
+            Application.stage.asc()
+        )
+
+    elif sort == "updated":
+
+        query = query.order_by(
+            Application.updated_at.desc()
+        )
+
     elif sort == "name_asc":
 
         query = query.order_by(

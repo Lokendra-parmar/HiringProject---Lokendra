@@ -363,3 +363,77 @@ th {
     }
 
 }
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.metric-card {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 36px;
+    font-weight: bold;
+    color: #14213d;
+}
+
+.metric-label {
+    margin-top: 8px;
+    color: #666;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.chart-description {
+    color: #777;
+    margin-top: -8px;
+}
+
+.interview-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+canvas {
+    max-height: 350px;
+}
+
+
+@media (max-width: 900px) {
+
+    .metric-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+}

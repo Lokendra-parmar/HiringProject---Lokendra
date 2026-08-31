@@ -195,6 +195,24 @@ Applications
                     </option>
 
                     <option
+    value="stage"
+    {% if selected_sort == "stage" %}
+        selected
+    {% endif %}
+>
+    Stage
+</option>
+
+<option
+    value="updated"
+    {% if selected_sort == "updated" %}
+        selected
+    {% endif %}
+>
+    Last Updated
+</option>
+                     
+                    <option
                         value="name_asc"
                         {% if selected_sort == "name_asc" %}
                             selected
