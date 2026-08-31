@@ -390,6 +390,13 @@ Applications
                 <span class="status">
                     {{ application.stage }}
                 </span>
+                {% if application.is_stalled %}
+
+                    <span class="stalled-badge">
+                        Stalled
+                    </span>
+
+                {% endif %}
 
             </td>
 

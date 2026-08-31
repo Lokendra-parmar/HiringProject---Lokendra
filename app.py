@@ -44,7 +44,8 @@ def create_app():
         ApplicationInterviewer,
         Feedback,
         InterviewSchedule,
-        ApplicationEvent
+        ApplicationEvent,
+        StalledDismissal
     )
     
 

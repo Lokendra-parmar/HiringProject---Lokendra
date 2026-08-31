@@ -41,6 +41,13 @@
 
                 {% if current_user.role == "recruiter" %}
 
+                    <a
+                        href="{{ url_for('applications.application_list') }}"
+                        class="btn"
+                    >
+                        Applications
+                    </a>
+
                     <a href="{{ url_for('jobs.job_list') }}">
                         Job Openings
                     </a>

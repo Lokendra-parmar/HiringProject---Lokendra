@@ -26,6 +26,13 @@ from utils.pipeline import (
     reject_application,
     reinstate_application
 )
+
+from models.stalled import StalledDismissal
+
+from utils.stalled import (
+    is_application_stalled,
+    is_stall_dismissed
+)
 # for csv export or reject 
 import csv
 import io
@@ -188,6 +195,13 @@ def application_list():
     )
 
     applications = pagination.items
+
+    for application in applications:
+
+        application.is_stalled = (
+            is_application_stalled(application)
+            and not is_stall_dismissed(application)
+        )
 
     jobs = (
         JobOpening.query
@@ -939,3 +953,63 @@ def export_csv():
     )
 
     return response
+
+@applications_bp.route(
+    "/<int:application_id>/stalled/dismiss",
+    methods=["POST"]
+)
+@role_required("recruiter")
+def dismiss_stalled_alert(application_id):
+
+    application = db.session.get(
+        Application,
+        application_id
+    )
+
+    if not application:
+        abort(404)
+
+    # Server-side validation:
+    # users cannot dismiss something that
+    # isn't actually stalled.
+    if not is_application_stalled(application):
+
+        flash(
+            "This application is not currently stalled.",
+            "error"
+        )
+
+        return redirect(
+            url_for("dashboard.dashboard")
+        )
+
+    if is_stall_dismissed(application):
+
+        flash(
+            "This stalled alert has already been dismissed.",
+            "error"
+        )
+
+        return redirect(
+            url_for("dashboard.dashboard")
+        )
+
+    dismissal = StalledDismissal(
+        application_id=application.id,
+        stage=application.stage,
+        stage_started_at=application.stage_changed_at,
+        dismissed_by=current_user.id
+    )
+
+    db.session.add(dismissal)
+
+    db.session.commit()
+
+    flash(
+        "Stalled alert dismissed.",
+        "success"
+    )
+
+    return redirect(
+        url_for("dashboard.dashboard")
+    )

@@ -184,7 +184,105 @@ Dashboard
 
     </div>
 
+    {% if stalled_applications %}
 
+<div class="detail-card stalled-section">
+
+    <div class="stalled-header">
+
+        <div>
+
+            <h2>
+                Stalled Applications
+            </h2>
+
+            <p>
+                Applications that have remained
+                in the same stage for more than 10 days.
+            </p>
+
+        </div>
+
+        <span class="stalled-count">
+            {{ stalled_applications|length }}
+        </span>
+
+    </div>
+
+
+    <div class="stalled-list">
+
+        {% for application in stalled_applications %}
+
+            <div class="stalled-item">
+
+                <div>
+
+                    <strong>
+                        {{ application.candidate_name }}
+                    </strong>
+
+                    <div class="stalled-meta">
+
+                        {{ application.job.title }}
+
+                        •
+
+                        {{ application.stage }}
+
+                        •
+
+                        Since
+                        {{ (application.stage_changed_at | ist).strftime(
+                            "%d %b %Y"
+                        ) }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="stalled-actions">
+
+                    <a
+                        href="{{ url_for(
+                            'applications.application_detail',
+                            application_id=application.id
+                        ) }}"
+                        class="small-btn"
+                    >
+                        View
+                    </a>
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'applications.dismiss_stalled_alert',
+                            application_id=application.id
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="small-btn"
+                        >
+                            Dismiss
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endif %}
     <!-- CHART DATA -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

@@ -11,6 +11,8 @@ from models.application import Application
 from models.event import ApplicationEvent
 from models.interview import InterviewSchedule
 from utils.decorators import role_required
+from utils.stalled import get_stalled_applications
+
 
 
 dashboard_bp = Blueprint(
@@ -220,6 +222,8 @@ def dashboard():
         weekly_counts.values()
     )
 
+    stalled_applications = get_stalled_applications()
+
     return render_template(
         "dashboard.html",
 
@@ -236,7 +240,8 @@ def dashboard():
         job_counts=job_counts,
 
         weekly_labels=weekly_labels,
-        weekly_values=weekly_values
+        weekly_values=weekly_values,
+        stalled_applications=stalled_applications
     )
     return render_template("dashboard.html")
 from utils.decorators import role_required

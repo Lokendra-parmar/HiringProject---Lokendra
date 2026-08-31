@@ -7,3 +7,4 @@ from .interview import (
     InterviewSchedule
 )
 from .event import ApplicationEvent
+from .stalled import StalledDismissal
