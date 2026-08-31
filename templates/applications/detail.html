@@ -1,24 +1,73 @@
 {% extends "base.html" %}
 
 {% block title %}
-Candidate Details
+{{ application.candidate_name }} - Candidate
 {% endblock %}
+
+
+{% block page_title %}
+Candidate Profile
+{% endblock %}
+
 
 {% block content %}
 
-<div class="page-header">
+<!-- =====================================================
+     CANDIDATE HERO
+===================================================== -->
 
-    <div>
+<div class="candidate-hero">
 
-        <h1>
-            {{ application.candidate_name }}
-        </h1>
+    <div class="candidate-hero-main">
 
-        <p>
-            {{ application.candidate_email }}
-        </p>
+        <div class="candidate-avatar">
+            {{ application.candidate_name[0]|upper }}
+        </div>
+
+        <div class="candidate-identity">
+
+            <div class="candidate-name-row">
+
+                <h1>
+                    {{ application.candidate_name }}
+                </h1>
+
+                <span
+                    class="candidate-stage-badge
+                    stage-{{ application.stage|lower }}"
+                >
+                    {{ application.stage }}
+                </span>
+
+            </div>
+
+            <p class="candidate-email">
+                {{ application.candidate_email }}
+            </p>
+
+            <div class="candidate-meta">
+
+                <span>
+                    <strong>Position:</strong>
+                    {{ application.job.title }}
+                </span>
+
+                <span>
+                    <strong>Department:</strong>
+                    {{ application.job.department }}
+                </span>
+
+                <span>
+                    <strong>Source:</strong>
+                    {{ application.source or "Not specified" }}
+                </span>
+
+            </div>
+
+        </div>
 
     </div>
+
 
     {% if current_user.role == "recruiter" %}
 
@@ -29,7 +78,7 @@ Candidate Details
             ) }}"
             class="btn"
         >
-            Edit
+            Edit Candidate
         </a>
 
     {% endif %}
@@ -37,85 +86,289 @@ Candidate Details
 </div>
 
 
-<div class="detail-card">
 
-    <h2>Application Information</h2>
+<!-- =====================================================
+     TOP GRID
+===================================================== -->
 
-    <p>
-        <strong>Job:</strong>
-        {{ application.job.title }}
-    </p>
+<div class="candidate-top-grid">
 
-    <p>
-        <strong>Department:</strong>
-        {{ application.job.department }}
-    </p>
 
-    <p>
-        <strong>Source:</strong>
-        {{ application.source or "-" }}
-    </p>
+    <!-- APPLICATION INFORMATION -->
 
-    <p>
-        <strong>Current Stage:</strong>
+    <div class="candidate-card">
 
-        <span class="status">
-            {{ application.stage }}
-        </span>
+        <div class="card-heading">
 
-    </p>
+            <div>
+                <span class="card-eyebrow">
+                    PROFILE
+                </span>
 
-    <p>
-        <strong>Notes:</strong>
-    </p>
+                <h2>
+                    Application Information
+                </h2>
+            </div>
 
-    <p>
-        {{ application.notes or "No notes available." }}
-    </p>
+        </div>
 
-</div>
 
-<div class="detail-card">
+        <div class="candidate-info-grid">
 
-    <h2>Interview Panel</h2>
+            <div class="info-item">
 
-    {% if application.interviewer_assignments %}
+                <span class="info-label">
+                    Job Opening
+                </span>
 
-        {% for assignment in application.interviewer_assignments %}
+                <strong>
+                    {{ application.job.title }}
+                </strong>
 
-            <div class="panel-member">
+            </div>
 
-                <div>
 
-                    <strong>
-                        {{ assignment.interviewer.name }}
-                    </strong>
+            <div class="info-item">
 
-                    <br>
+                <span class="info-label">
+                    Department
+                </span>
 
-                    <small>
-                        {{ assignment.interviewer.email }}
-                    </small>
+                <strong>
+                    {{ application.job.department }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span class="info-label">
+                    Source
+                </span>
+
+                <strong>
+                    {{ application.source or "-" }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span class="info-label">
+                    Applied On
+                </span>
+
+                <strong>
+
+                    {% if application.applied_at %}
+
+                        {{ (application.applied_at | ist).strftime(
+                            "%d %b %Y"
+                        ) }}
+
+                    {% else %}
+
+                        -
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="candidate-notes">
+
+            <span class="info-label">
+                Recruiter Notes
+            </span>
+
+            <p>
+                {{ application.notes or "No notes have been added for this candidate." }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- PIPELINE -->
+
+    <div class="candidate-card pipeline-card">
+
+        <div class="card-heading">
+
+            <div>
+
+                <span class="card-eyebrow">
+                    WORKFLOW
+                </span>
+
+                <h2>
+                    Hiring Pipeline
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        {% set stages = [
+            "Applied",
+            "Screening",
+            "Interview",
+            "Offer",
+            "Hired"
+        ] %}
+
+
+        <div class="modern-pipeline">
+
+            {% for stage in stages %}
+
+                <div class="modern-stage">
+
+                    <div
+                        class="stage-circle
+                        {% if application.stage == stage %}
+                            stage-current
+                        {% elif application.stage != 'Rejected'
+                              and stages.index(application.stage)
+                                  > stages.index(stage) %}
+                            stage-complete
+                        {% endif %}"
+                    >
+
+                        {% if application.stage != "Rejected"
+                              and stages.index(application.stage)
+                                  > stages.index(stage) %}
+
+                            ✓
+
+                        {% else %}
+
+                            {{ loop.index }}
+
+                        {% endif %}
+
+                    </div>
+
+                    <span
+                        class="
+                        {% if application.stage == stage %}
+                            stage-label-current
+                        {% endif %}
+                        "
+                    >
+                        {{ stage }}
+                    </span>
 
                 </div>
 
+                {% if not loop.last %}
 
-                {% if current_user.role == "recruiter" %}
+                    <div
+                        class="stage-line
+                        {% if application.stage != 'Rejected'
+                              and stages.index(application.stage)
+                                  > stages.index(stage) %}
+                            line-complete
+                        {% endif %}"
+                    ></div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+
+        {% if application.stage == "Rejected" %}
+
+            <div class="rejected-state">
+
+                <strong>
+                    Candidate Rejected
+                </strong>
+
+                <span>
+                    This application is currently outside
+                    the active hiring pipeline.
+                </span>
+
+            </div>
+
+        {% endif %}
+
+
+        {% if current_user.role == "recruiter" %}
+
+            <div class="pipeline-actions modern-actions">
+
+                {% if application.stage != "Rejected"
+                      and application.stage != "Hired" %}
 
                     <form
                         method="POST"
                         action="{{ url_for(
-                            'interviews.remove_interviewer',
-                            application_id=application.id,
-                            interviewer_id=assignment.interviewer_id
+                            'applications.advance',
+                            application_id=application.id
                         ) }}"
                     >
 
                         <button
                             type="submit"
-                            class="small-btn danger"
+                            class="btn"
                         >
-                            Remove
+                            Advance Stage →
+                        </button>
+
+                    </form>
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'applications.reject',
+                            application_id=application.id
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="btn-danger"
+                            onclick="return confirm(
+                                'Reject this application?'
+                            )"
+                        >
+                            Reject Candidate
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                {% if application.stage == "Rejected" %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'applications.reinstate',
+                            application_id=application.id
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="btn"
+                        >
+                            Reinstate Candidate
                         </button>
 
                     </form>
@@ -124,261 +377,351 @@ Candidate Details
 
             </div>
 
-        {% endfor %}
+        {% endif %}
 
-    {% else %}
-
-        <p>
-            No interviewers assigned yet.
-        </p>
-
-    {% endif %}
-
-
-    {% if current_user.role == "recruiter" %}
-
-        <hr>
-
-        <h3>Assign Interviewer</h3>
-
-        <form
-            method="POST"
-            action="{{ url_for(
-                'interviews.assign_interviewer',
-                application_id=application.id
-            ) }}"
-        >
-
-            <div class="form-group">
-
-                <select
-                    name="interviewer_id"
-                    required
-                >
-
-                    <option value="">
-                        Select interviewer
-                    </option>
-
-                    {% for user in interviewers %}
-
-                        <option value="{{ user.id }}">
-                            {{ user.name }}
-                            ({{ user.email }})
-                        </option>
-
-                    {% endfor %}
-
-                </select>
-
-            </div>
-
-            <button
-                type="submit"
-                class="btn"
-            >
-                Assign Interviewer
-            </button>
-
-        </form>
-
-    {% endif %}
+    </div>
 
 </div>
 
-<div class="detail-card">
-
-    <h2>Scheduled Interviews</h2>
 
 
-    {% if application.scheduled_interviews %}
+<!-- =====================================================
+     INTERVIEW GRID
+===================================================== -->
 
-        {% for interview in application.scheduled_interviews %}
-
-            <div class="interview-item">
-
-                <strong>
-                    {{ interview.scheduled_at.strftime(
-                        "%d %b %Y, %I:%M %p"
-                    ) }}
-                </strong>
-
-                {% if interview.notes %}
-
-                    <p>
-                        {{ interview.notes }}
-                    </p>
-
-                {% endif %}
-
-            </div>
-
-        {% endfor %}
-
-    {% else %}
-
-        <p>No interviews scheduled.</p>
-
-    {% endif %}
+<div class="candidate-middle-grid">
 
 
-    {% if current_user.role == "recruiter" %}
+    <!-- INTERVIEW PANEL -->
 
-        <hr>
+    <div class="candidate-card">
 
-        <h3>Schedule Interview</h3>
+        <div class="card-heading">
 
-        <form
-            method="POST"
-            action="{{ url_for(
-                'interviews.schedule_interview',
-                application_id=application.id
-            ) }}"
-        >
+            <div>
 
-            <div class="form-group">
-
-                <label for="scheduled_at">
-                    Date & Time
-                </label>
-
-                <input
-                    type="datetime-local"
-                    id="scheduled_at"
-                    name="scheduled_at"
-                    required
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="interview_notes">
-                    Notes
-                </label>
-
-                <textarea
-                    id="interview_notes"
-                    name="notes"
-                    rows="3"
-                    placeholder="Technical interview, Google Meet, etc."
-                ></textarea>
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="btn"
-            >
-                Schedule Interview
-            </button>
-
-        </form>
-
-    {% endif %}
-
-</div>
-
-<div class="detail-card">
-
-    <h2>Pipeline</h2>
-
-    <div class="pipeline">
-
-        {% for stage in ["Applied", "Screening", "Interview", "Offer", "Hired"] %}
-
-            <div
-                class="pipeline-stage
-                {% if application.stage == stage %}
-                    current
-                {% endif %}"
-            >
-
-                {{ stage }}
-
-            </div>
-
-            {% if not loop.last %}
-
-                <span class="pipeline-arrow">
-                    →
+                <span class="card-eyebrow">
+                    PANEL
                 </span>
 
-            {% endif %}
+                <h2>
+                    Interviewers
+                </h2>
 
-        {% endfor %}
+            </div>
+
+            <span class="card-count">
+                {{ application.interviewer_assignments|length }}
+            </span>
+
+        </div>
+
+
+        {% if application.interviewer_assignments %}
+
+            <div class="interviewer-list">
+
+                {% for assignment in
+                    application.interviewer_assignments %}
+
+                    <div class="modern-panel-member">
+
+                        <div class="panel-avatar">
+                            {{ assignment.interviewer.name[0]|upper }}
+                        </div>
+
+                        <div class="panel-person">
+
+                            <strong>
+                                {{ assignment.interviewer.name }}
+                            </strong>
+
+                            <span>
+                                {{ assignment.interviewer.email }}
+                            </span>
+
+                        </div>
+
+
+                        {% if current_user.role == "recruiter" %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'interviews.remove_interviewer',
+                                    application_id=application.id,
+                                    interviewer_id=assignment.interviewer_id
+                                ) }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="small-btn danger"
+                                    onclick="return confirm(
+                                        'Remove this interviewer?'
+                                    )"
+                                >
+                                    Remove
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="mini-empty-state">
+
+                <div class="empty-icon">
+                    👥
+                </div>
+
+                <strong>
+                    No interviewers assigned
+                </strong>
+
+                <span>
+                    Assign an interviewer to start
+                    collecting feedback.
+                </span>
+
+            </div>
+
+        {% endif %}
+
+
+        {% if current_user.role == "recruiter" %}
+
+            <div class="card-divider"></div>
+
+            <div class="inline-form-section">
+
+                <h3>
+                    Assign Interviewer
+                </h3>
+
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'interviews.assign_interviewer',
+                        application_id=application.id
+                    ) }}"
+                    class="assign-form"
+                >
+
+                    <select
+                        name="interviewer_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select interviewer
+                        </option>
+
+                        {% for user in interviewers %}
+
+                            <option value="{{ user.id }}">
+
+                                {{ user.name }}
+                                — {{ user.email }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+
+                    <button
+                        type="submit"
+                        class="btn"
+                    >
+                        Assign
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% endif %}
 
     </div>
 
 
-    <div class="pipeline-actions">
 
-        {% if application.stage != "Rejected"
-              and application.stage != "Hired" %}
+    <!-- INTERVIEW SCHEDULE -->
 
-            <form
-                method="POST"
-                action="{{ url_for(
-                    'applications.advance',
-                    application_id=application.id
-                ) }}"
-            >
+    <div class="candidate-card">
 
-                <button
-                    type="submit"
-                    class="btn"
-                >
-                    Advance to Next Stage
-                </button>
+        <div class="card-heading">
 
-            </form>
+            <div>
+
+                <span class="card-eyebrow">
+                    SCHEDULE
+                </span>
+
+                <h2>
+                    Interviews
+                </h2>
+
+            </div>
+
+            <span class="card-count">
+                {{ application.scheduled_interviews|length }}
+            </span>
+
+        </div>
+
+
+        {% if application.scheduled_interviews %}
+
+            <div class="scheduled-list">
+
+                {% for interview in
+                    application.scheduled_interviews %}
+
+                    <div class="modern-interview-item">
+
+                        <div class="calendar-box">
+
+                            <span class="calendar-day">
+                                {{ interview.scheduled_at.strftime(
+                                    "%d"
+                                ) }}
+                            </span>
+
+                            <span class="calendar-month">
+                                {{ interview.scheduled_at.strftime(
+                                    "%b"
+                                ) }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="interview-details">
+
+                            <strong>
+                                {{ interview.scheduled_at.strftime(
+                                    "%I:%M %p"
+                                ) }}
+                            </strong>
+
+                            <span>
+                                {{ interview.scheduled_at.strftime(
+                                    "%A, %d %B %Y"
+                                ) }}
+                            </span>
+
+                            {% if interview.notes %}
+
+                                <p>
+                                    {{ interview.notes }}
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="mini-empty-state">
+
+                <div class="empty-icon">
+                    📅
+                </div>
+
+                <strong>
+                    No interviews scheduled
+                </strong>
+
+                <span>
+                    Interview sessions will appear here.
+                </span>
+
+            </div>
 
         {% endif %}
 
 
-        {% if application.stage != "Rejected"
-              and application.stage != "Hired" %}
+        {% if current_user.role == "recruiter" %}
 
-            <form
-                method="POST"
-                action="{{ url_for(
-                    'applications.reject',
-                    application_id=application.id
-                ) }}"
-            >
+            <div class="card-divider"></div>
 
-                <button
-                    type="submit"
-                    class="btn-danger"
+            <div class="inline-form-section">
+
+                <h3>
+                    Schedule Interview
+                </h3>
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'interviews.schedule_interview',
+                        application_id=application.id
+                    ) }}"
                 >
-                    Reject
-                </button>
 
-            </form>
+                    <div class="schedule-form-grid">
 
-        {% endif %}
+                        <div class="form-group">
+
+                            <label for="scheduled_at">
+                                Date & Time
+                            </label>
+
+                            <input
+                                type="datetime-local"
+                                id="scheduled_at"
+                                name="scheduled_at"
+                                required
+                            >
+
+                        </div>
 
 
-        {% if application.stage == "Rejected" %}
+                        <div class="form-group">
 
-            <form
-                method="POST"
-                action="{{ url_for(
-                    'applications.reinstate',
-                    application_id=application.id
-                ) }}"
-            >
+                            <label for="interview_notes">
+                                Interview Notes
+                            </label>
 
-                <button
-                    type="submit"
-                    class="btn"
-                >
-                    Reinstate
-                </button>
+                            <input
+                                type="text"
+                                id="interview_notes"
+                                name="notes"
+                                placeholder="Technical interview, Google Meet..."
+                            >
 
-            </form>
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn"
+                    >
+                        Schedule Interview
+                    </button>
+
+                </form>
+
+            </div>
 
         {% endif %}
 
@@ -386,50 +729,169 @@ Candidate Details
 
 </div>
 
-<div class="detail-card">
 
-    <h2>Application History</h2>
+
+<!-- =====================================================
+     APPLICATION HISTORY
+===================================================== -->
+
+<div class="candidate-card history-card">
+
+    <div class="card-heading">
+
+        <div>
+
+            <span class="card-eyebrow">
+                AUDIT TRAIL
+            </span>
+
+            <h2>
+                Application Timeline
+            </h2>
+
+            <p class="section-description">
+                Complete immutable history of this application.
+            </p>
+
+        </div>
+
+        <span class="card-count">
+            {{ application.events|length }}
+        </span>
+
+    </div>
+
 
     {% if application.events %}
 
-        <div class="timeline">
+        <div class="modern-timeline">
 
-            {% for event in application.events %}
+            {% for event in application.events|reverse %}
 
-                <div class="timeline-item">
+                <div class="modern-timeline-item">
 
-                    <strong>
-                        {{ event.event_type.replace("_", " ") }}
-                    </strong>
 
-                    {% if event.old_stage and event.new_stage %}
+                    <div class="timeline-rail">
 
-                        <p>
-                            {{ event.old_stage }}
-                            →
-                            {{ event.new_stage }}
-                        </p>
+                        <div
+                            class="timeline-dot
+                            event-{{ event.event_type|lower }}"
+                        >
 
-                    {% endif %}
+                            {% if event.event_type == "APPLICATION_CREATED" %}
 
-                    {% if event.message %}
+                                +
 
-                        <p>
-                            {{ event.message }}
-                        </p>
+                            {% elif event.event_type == "STAGE_CHANGED" %}
 
-                    {% endif %}
+                                →
 
-                    {% if event.created_at %}
+                            {% elif event.event_type == "REJECTED" %}
 
-                        <small>
-                            {{ (event.created_at | ist).strftime(
-                                "%d %b %Y , %H:%M"
-                            ) }}
-                        </small>
+                                ×
 
-                    {% endif %}
-                    
+                            {% elif event.event_type == "REINSTATED" %}
+
+                                ↺
+
+                            {% elif event.event_type == "INTERVIEWER_ASSIGNED" %}
+
+                                +
+
+                            {% elif event.event_type == "INTERVIEWER_REMOVED" %}
+
+                                −
+
+                            {% elif event.event_type ==
+                                    "INTERVIEW_SCHEDULED" %}
+
+                                ◷
+
+                            {% elif event.event_type ==
+                                    "INTERVIEW_FEEDBACK_SUBMITTED" %}
+
+                                ✓
+
+                            {% else %}
+
+                                •
+
+                            {% endif %}
+
+                        </div>
+
+                        {% if not loop.last %}
+
+                            <div class="timeline-line"></div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="timeline-event-card">
+
+                        <div class="timeline-event-header">
+
+                            <span class="event-name">
+                                {{ event.event_type
+                                    .replace("_", " ")
+                                    |title }}
+                            </span>
+
+
+                            {% if event.created_at %}
+
+                                <span class="event-time">
+
+                                    {{ (event.created_at | ist).strftime(
+                                        "%d %b %Y"
+                                    ) }}
+
+                                    <strong>
+                                        {{ (event.created_at | ist).strftime(
+                                            "%I:%M %p"
+                                        ) }}
+                                    </strong>
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        {% if event.old_stage
+                              and event.new_stage %}
+
+                            <div class="stage-transition">
+
+                                <span>
+                                    {{ event.old_stage }}
+                                </span>
+
+                                <span class="transition-arrow">
+                                    →
+                                </span>
+
+                                <span>
+                                    {{ event.new_stage }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if event.message %}
+
+                            <p class="event-message">
+                                {{ event.message }}
+                            </p>
+
+                        {% endif %}
+
+                    </div>
 
                 </div>
 
@@ -439,7 +901,18 @@ Candidate Details
 
     {% else %}
 
-        <p>No history available.</p>
+        <div class="mini-empty-state">
+
+            <strong>
+                No application history
+            </strong>
+
+            <span>
+                Activity for this application
+                will appear here.
+            </span>
+
+        </div>
 
     {% endif %}
 
@@ -447,86 +920,159 @@ Candidate Details
 
 
 
+<!-- =====================================================
+     INTERVIEWER FEEDBACK
+===================================================== -->
 
-<div class="detail-card">
+<div class="candidate-card feedback-section">
 
-    <h2>Interviewer Feedback</h2>
+    <div class="card-heading">
+
+        <div>
+
+            <span class="card-eyebrow">
+                ASSESSMENT
+            </span>
+
+            <h2>
+                Interviewer Feedback
+            </h2>
+
+        </div>
+
+        <span class="card-count">
+            {{ application.feedback_entries|length }}
+        </span>
+
+    </div>
+
 
     {% if application.feedback_entries %}
 
-        {% for feedback in application.feedback_entries %}
+        <div class="feedback-list">
 
-            <div class="feedback-item">
+            {% for feedback in application.feedback_entries %}
 
-                <strong>
-                    {{ feedback.interviewer.name }}
-                </strong>
+                <div class="modern-feedback">
 
-                <p>
-                    {{ feedback.content }}
-                </p>
+                    <div class="feedback-top">
 
-                {% if feedback.created_at %}
+                        <div class="feedback-person">
 
-                    <small>
-                        {{ (feedback.created_at | ist).strftime(
-                            "%d %b %Y , %H:%M"
-                        ) }}
-                    </small>
+                            <div class="feedback-avatar">
+                                {{ feedback.interviewer.name[0]|upper }}
+                            </div>
 
-                {% endif %}
+                            <div>
 
-            </div>
+                                <strong>
+                                    {{ feedback.interviewer.name }}
+                                </strong>
 
-        {% endfor %}
+                                <span>
+                                    Interviewer
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        {% if feedback.created_at %}
+
+                            <span class="feedback-time">
+
+                                {{ (feedback.created_at | ist).strftime(
+                                    "%d %b %Y, %I:%M %p"
+                                ) }}
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="feedback-content">
+
+                        {{ feedback.content }}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
 
     {% else %}
 
-        <p>
-            No feedback has been submitted yet.
-        </p>
+        <div class="mini-empty-state">
+
+            <div class="empty-icon">
+                💬
+            </div>
+
+            <strong>
+                No feedback submitted
+            </strong>
+
+            <span>
+                Interviewer assessment will
+                appear here.
+            </span>
+
+        </div>
 
     {% endif %}
 
 
     {% if current_user.role == "interviewer" %}
 
-        <hr>
+        <div class="card-divider"></div>
 
-        <h3>Add Interview Feedback</h3>
+        <div class="feedback-form">
 
-        <form
-            method="POST"
-            action="{{ url_for(
-                'interviews.add_feedback',
-                application_id=application.id
-            ) }}"
-        >
+            <h3>
+                Add Interview Feedback
+            </h3>
 
-            <div class="form-group">
+            <p>
+                Share your assessment of this candidate.
+            </p>
 
-                <label for="feedback">
-                    Your Feedback
-                </label>
 
-                <textarea
-                    id="feedback"
-                    name="content"
-                    rows="6"
-                    placeholder="Enter interview feedback..."
-                    required
-                ></textarea>
-
-            </div>
-
-            <button
-                type="submit"
-                class="btn"
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'interviews.add_feedback',
+                    application_id=application.id
+                ) }}"
             >
-                Submit Feedback
-            </button>
 
-        </form>
+                <div class="form-group">
+
+                    <textarea
+                        id="feedback"
+                        name="content"
+                        rows="6"
+                        placeholder="Describe the candidate's strengths, concerns and your recommendation..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Submit Feedback
+                </button>
+
+            </form>
+
+        </div>
 
     {% endif %}
 
