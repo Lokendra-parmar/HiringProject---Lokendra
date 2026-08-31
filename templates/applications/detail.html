@@ -423,12 +423,13 @@ Candidate Details
                     {% if event.created_at %}
 
                         <small>
-                            {{ event.created_at.strftime(
-                                "%d %b %Y %H:%M"
+                            {{ (event.created_at | ist).strftime(
+                                "%d %b %Y , %H:%M"
                             ) }}
                         </small>
 
                     {% endif %}
+                    
 
                 </div>
 
@@ -468,8 +469,8 @@ Candidate Details
                 {% if feedback.created_at %}
 
                     <small>
-                        {{ feedback.created_at.strftime(
-                            "%d %b %Y %H:%M"
+                        {{ (feedback.created_at | ist).strftime(
+                            "%d %b %Y , %H:%M"
                         ) }}
                     </small>
 

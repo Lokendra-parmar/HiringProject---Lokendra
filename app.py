@@ -20,12 +20,17 @@ def create_app():
     def load_user(user_id):
         return db.session.get(User, int(user_id))
 
+    
+
     from routes.auth import auth_bp
     from routes.dashboard import dashboard_bp
     from routes.jobs import jobs_bp
     from routes.applications import applications_bp
     from routes.interviews import interviews_bp
 
+    from utils.timezone import to_ist
+    app.jinja_env.filters["ist"] = to_ist
+    
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(jobs_bp)

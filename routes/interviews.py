@@ -22,6 +22,7 @@ from models.interview import (
 
 from utils.decorators import role_required
 from utils.interviewer import is_assigned_interviewer
+from utils.events import create_application_event
 from datetime import datetime
 
 interviews_bp = Blueprint(
@@ -121,7 +122,15 @@ def assign_interviewer(application_id):
     )
 
     db.session.add(assignment)
-
+    create_application_event(
+        application_id=application.id,
+        event_type="INTERVIEWER_ASSIGNED",
+        actor_id=current_user.id,
+        message=(
+            f"{interviewer.name} was assigned "
+            f"as an interviewer."
+        )
+    )
     db.session.commit()
 
     flash(
@@ -158,6 +167,22 @@ def remove_interviewer(
     if not assignment:
         abort(404)
 
+    interviewer = db.session.get(
+        User,
+        interviewer_id
+    )
+
+    if interviewer:
+
+        create_application_event(
+            application_id=application_id,
+            event_type="INTERVIEWER_REMOVED",
+            actor_id=current_user.id,
+            message=(
+                f"{interviewer.name} was removed "
+                f"from the interview panel."
+            )
+        )
     db.session.delete(assignment)
 
     db.session.commit()
@@ -249,6 +274,16 @@ def add_feedback(application_id):
 
     db.session.add(feedback)
 
+    create_application_event(
+        application_id=application.id,
+        event_type="INTERVIEW_FEEDBACK_SUBMITTED",
+        actor_id=current_user.id,
+        message=(
+            f"Interview feedback submitted by "
+            f"{current_user.name}."
+        )
+    )
+
     db.session.commit()
 
     flash(
@@ -330,6 +365,15 @@ def schedule_interview(application_id):
     )
 
     db.session.add(interview)
+    create_application_event(
+        application_id=application.id,
+            event_type="INTERVIEW_SCHEDULED",
+            actor_id=current_user.id,
+            message=(
+                "Interview scheduled for "
+                f"{interview_datetime.strftime('%d %b %Y, %I:%M %p')}."
+            )       
+    )
     db.session.commit()
 
     flash(
