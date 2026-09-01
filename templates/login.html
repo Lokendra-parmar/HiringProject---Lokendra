@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,80 +6,436 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login - Hiring Pipeline</title>
+    <title>Login | Hiring Pipeline</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* =========================
+           LOGIN PAGE
+        ========================== */
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 600px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(20, 33, 61, 0.12);
+        }
+
+        /* =========================
+           LEFT BRAND SECTION
+        ========================== */
+
+        .login-brand {
+            background: #14213d;
+            color: #ffffff;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-badge {
+            width: fit-content;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .login-brand h1 {
+            margin: 0 0 18px;
+            font-size: 42px;
+            line-height: 1.15;
+        }
+
+        .login-brand h1 span {
+            color: #fca311;
+        }
+
+        .brand-description {
+            max-width: 420px;
+            color: #dce3ef;
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 35px;
+        }
+
+        .brand-features {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .brand-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(252, 163, 17, 0.15);
+            color: #fca311;
+            font-weight: bold;
+        }
+
+        /* =========================
+           RIGHT LOGIN SECTION
+        ========================== */
+
+        .login-section {
+            padding: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 390px;
+        }
+
+        .login-header {
+            margin-bottom: 32px;
+        }
+
+        .login-header h2 {
+            margin: 0 0 8px;
+            color: #14213d;
+            font-size: 30px;
+        }
+
+        .login-header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* =========================
+           FLASH MESSAGES
+        ========================== */
+
+        .alert {
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert.success {
+            background: #e8f7ee;
+            color: #187a42;
+        }
+
+        .alert.danger,
+        .alert.error {
+            background: #fdecec;
+            color: #b42318;
+        }
+
+        .alert.warning {
+            background: #fff6df;
+            color: #946200;
+        }
+
+        .alert.info {
+            background: #eaf3ff;
+            color: #175cd3;
+        }
+
+        /* =========================
+           FORM
+        ========================== */
+
+        .form-group {
+            margin-bottom: 21px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #14213d;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 48px;
+            padding: 0 14px;
+            box-sizing: border-box;
+            border: 1px solid #d5d9e2;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #14213d;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #fca311;
+            box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.12);
+        }
+
+        .login-button {
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 9px;
+            background: #fca311;
+            color: #14213d;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .login-button:hover {
+            background: #e89400;
+            transform: translateY(-1px);
+        }
+
+        .login-footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #8a93a3;
+            font-size: 13px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 800px) {
+
+            .login-container {
+                padding: 20px;
+            }
+
+            .login-wrapper {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+
+            .login-brand {
+                padding: 40px 30px;
+            }
+
+            .login-brand h1 {
+                font-size: 32px;
+            }
+
+            .brand-description {
+                margin-bottom: 25px;
+            }
+
+            .login-section {
+                padding: 40px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .login-container {
+                padding: 10px;
+            }
+
+            .login-wrapper {
+                border-radius: 14px;
+            }
+
+            .login-brand {
+                padding: 32px 24px;
+            }
+
+            .login-section {
+                padding: 32px 24px;
+            }
+
+            .login-brand h1 {
+                font-size: 28px;
+            }
+
+            .login-header h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
+
 </head>
 
 <body>
 
     <div class="login-container">
 
-        <div class="login-card">
+        <div class="login-wrapper">
 
-            <h1>Hiring Pipeline</h1>
+            <!-- =========================
+                 BRAND / INFORMATION
+            ========================== -->
 
-            <p>Sign in to continue</p>
+            <div class="login-brand">
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
+                <div class="brand-badge">
+                    RECRUITMENT MANAGEMENT SYSTEM
+                </div>
 
-                {% if messages %}
+                <h1>
+                    Hiring <span>Pipeline</span>
+                </h1>
 
-                    {% for category, message in messages %}
+                <p class="brand-description">
+                    Manage candidates, job openings, applications,
+                    interviews and recruitment progress from one
+                    centralized platform.
+                </p>
 
-                        <div class="alert {{ category }}">
-                            {{ message }}
+                <div class="brand-features">
+
+                    <div class="brand-feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Track candidates through every hiring stage</span>
+                    </div>
+
+                    <div class="brand-feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Manage applications and interviews efficiently</span>
+                    </div>
+
+                    <div class="brand-feature">
+                        <div class="feature-icon">✓</div>
+                        <span>Keep your recruitment workflow organized</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 LOGIN FORM
+            ========================== -->
+
+            <div class="login-section">
+
+                <div class="login-card">
+
+                    <div class="login-header">
+
+                        <h2>Welcome back</h2>
+
+                        <p>
+                            Sign in to access your hiring dashboard.
+                        </p>
+
+                    </div>
+
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+
+                        {% if messages %}
+
+                            {% for category, message in messages %}
+
+                                <div class="alert {{ category }}">
+                                    {{ message }}
+                                </div>
+
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+                    <form method="POST">
+
+                        <div class="form-group">
+
+                            <label for="email">
+                                Email address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required
+                                autocomplete="email"
+                                placeholder="Enter your email"
+                            >
+
                         </div>
 
-                    {% endfor %}
 
-                {% endif %}
+                        <div class="form-group">
 
-            {% endwith %}
+                            <label for="password">
+                                Password
+                            </label>
 
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                required
+                                autocomplete="current-password"
+                                placeholder="Enter your password"
+                            >
 
-            <form method="POST">
-
-                <div class="form-group">
-
-                    <label for="email">
-                        Email
-                    </label>
-
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        required
-                        autocomplete="email"
-                    >
-
-                </div>
+                        </div>
 
 
-                <div class="form-group">
+                        <button
+                            type="submit"
+                            class="login-button">
+                            Sign In
+                        </button>
 
-                    <label for="password">
-                        Password
-                    </label>
+                    </form>
 
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        required
-                        autocomplete="current-password"
-                    >
+
+                    <div class="login-footer">
+                        Hiring Pipeline &middot; Recruitment Management System
+                    </div>
 
                 </div>
 
-
-                <button type="submit">
-                    Login
-                </button>
-
-            </form>
+            </div>
 
         </div>
 
@@ -87,3 +444,4 @@
 </body>
 
 </html>
+

@@ -1,100 +1,139 @@
 {% extends "base.html" %}
 
-{% block title %}
-My Interviews
-{% endblock %}
+{% block title %}My Interviews{% endblock %}
 
 {% block content %}
 
-<h1>My Assigned Applications</h1>
+<div class="interviews-page">
 
-<p>
-    These are the candidates assigned to you for interview.
-</p>
+    <div class="page-header">
+        <div>
+            <span class="card-eyebrow">INTERVIEWER WORKSPACE</span>
+
+            <h1>My Interviews</h1>
+
+            <p>
+                Review candidates assigned to you and submit your interview feedback.
+            </p>
+        </div>
+    </div>
 
 
-{% if applications %}
+    {% if applications %}
 
-<table>
+    <div class="interview-table-card">
 
-    <thead>
+        <div class="interview-table-header">
+            <div>
+                <h2>Assigned Candidates</h2>
+                <p>
+                    {{ applications|length }} candidate{% if applications|length != 1 %}s{% endif %}
+                    assigned to your interview panel.
+                </p>
+            </div>
+        </div>
 
-        <tr>
-            <th>Candidate</th>
-            <th>Job</th>
-            <th>Stage</th>
-            <th>Applied</th>
-            <th>Action</th>
-        </tr>
 
-    </thead>
+        <div class="table-wrapper">
 
-    <tbody>
+            <table>
 
-        {% for application in applications %}
+                <thead>
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Job</th>
+                        <th>Stage</th>
+                        <th>Applied</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
 
-        <tr>
+                <tbody>
 
-            <td>
-                {{ application.candidate_name }}
-            </td>
+                    {% for application in applications %}
 
-            <td>
-                {{ application.job.title }}
-            </td>
+                    <tr>
 
-            <td>
-                <span class="status">
-                    {{ application.stage }}
-                </span>
-            </td>
+                        <td>
+                            <div class="interview-candidate">
 
-            <td>
+                                <!-- <div class="interview-avatar">
+                                    {{ application.candidate_name[0]|upper }}
+                                </div> -->
 
-                {% if application.applied_at %}
+                                <div>
+                                    <strong>
+                                        {{ application.candidate_name }}
+                                    </strong>
+                                </div>
 
-                    {{ application.applied_at.strftime(
-                        "%d %b %Y"
-                    ) }}
+                            </div>
+                        </td>
 
-                {% endif %}
 
-            </td>
+                        <td>
+                            {{ application.job.title }}
+                        </td>
 
-            <td>
 
-                <a
-                    href="{{ url_for(
-                        'applications.application_detail',
-                        application_id=application.id
-                    ) }}"
-                    class="small-btn"
-                >
-                    View
-                </a>
+                        <td>
+                            <span class="interview-stage">
+                                {{ application.stage }}
+                            </span>
+                        </td>
 
-            </td>
 
-        </tr>
+                        <td>
+                            {% if application.applied_at %}
+                                {{ application.applied_at.strftime("%d %b %Y") }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
 
-        {% endfor %}
 
-    </tbody>
+                        <td>
+                            <a
+                                href="{{ url_for(
+                                    'applications.application_detail',
+                                    application_id=application.id
+                                ) }}"
+                                class="small-btn"
+                            >
+                                View Candidate
+                            </a>
+                        </td>
 
-</table>
+                    </tr>
 
-{% else %}
+                    {% endfor %}
 
-<div class="empty-state">
+                </tbody>
 
-    <h3>No assignments</h3>
+            </table>
 
-    <p>
-        You currently have no applications assigned to you.
-    </p>
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state interview-empty-state">
+
+        <div class="empty-icon">
+            👥
+        </div>
+
+        <h3>No Assigned Interviews</h3>
+
+        <p>
+            You currently have no candidates assigned to your interview panel.
+        </p>
+
+    </div>
+
+    {% endif %}
 
 </div>
-
-{% endif %}
 
 {% endblock %}
