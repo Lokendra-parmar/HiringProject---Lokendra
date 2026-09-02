@@ -3,44 +3,78 @@ from extensions import db
 from models.user import User
 
 
+users = [
+    {
+        "name": "Demo Recruiter",
+        "email": "recruiter@example.com",
+        "password": "Recruiter@123",
+        "role": "recruiter"
+    },
+    {
+        "name": "Demo Recruiter 2",
+        "email": "recruiter2@example.com",
+        "password": "Recruiter2@123",
+        "role": "recruiter"
+    },
+    {
+        "name": "Demo Interviewer",
+        "email": "interviewer@example.com",
+        "password": "Interviewer@123",
+        "role": "interviewer"
+    },
+    {
+        "name": "Interviewer_1",
+        "email": "interviewer1@example.com",
+        "password": "Interviewer1@123",
+        "role": "interviewer"
+    },
+    {
+        "name": "Interviewer_2",
+        "email": "interviewer2@example.com",
+        "password": "Interviewer2@123",
+        "role": "interviewer"
+    },
+    {
+        "name": "Interviewer_3",
+        "email": "interviewer3@example.com",
+        "password": "Interviewer3@123",
+        "role": "interviewer"
+    }
+]
+
+
 with app.app_context():
 
     db.create_all()
 
-    recruiter = User.query.filter_by(
-        email="recruiter@example.com"
-    ).first()
+    for user_data in users:
 
-    if not recruiter:
+        existing_user = User.query.filter_by(
+            email=user_data["email"]
+        ).first()
 
-        recruiter = User(
-            name="Demo Recruiter",
-            email="recruiter@example.com",
-            role="recruiter"
+        if existing_user:
+            print(
+                f"Already exists: "
+                f"{existing_user.name} ({existing_user.email})"
+            )
+            continue
+
+        user = User(
+            name=user_data["name"],
+            email=user_data["email"],
+            role=user_data["role"]
         )
 
-        recruiter.set_password("Recruiter@123")
+        user.set_password(user_data["password"])
 
-        db.session.add(recruiter)
+        db.session.add(user)
 
-
-    interviewer = User.query.filter_by(
-        email="interviewer@example.com"
-    ).first()
-
-    if not interviewer:
-
-        interviewer = User(
-            name="Demo Interviewer",
-            email="interviewer@example.com",
-            role="interviewer"
+        print(
+            f"Created: "
+            f"{user_data['name']} ({user_data['email']})"
         )
-
-        interviewer.set_password("Interviewer@123")
-
-        db.session.add(interviewer)
-
 
     db.session.commit()
 
-    print("Demo users created successfully.")
+    print("\nUser seeding completed successfully.")

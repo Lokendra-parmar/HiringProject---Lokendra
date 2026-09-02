@@ -890,6 +890,11 @@ Candidate Profile
                             </p>
 
                         {% endif %}
+                        {% if event.actor %}
+                            <div class="event-actor" style="font-weight: lighter; font-size: 14px;">
+                                By {{ event.actor.name }}
+                            </div>
+                        {% endif %}
 
                     </div>
 

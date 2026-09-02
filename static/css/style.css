@@ -3209,23 +3209,19 @@ TABLE
 ========================================================= */
 
 .applications-table-wrapper {
-overflow-x: auto;
-
-background: white;
-
-border: 1px solid var(--border);
-
-border-radius: 12px;
-
-box-shadow: var(--shadow-sm);
-
+    width: 100%;
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
 }
 
 .applications-table {
-margin: 0;
-
-min-width: 1050px;
-
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    table-layout: fixed;
 }
 
 .applications-table th {
@@ -3968,4 +3964,121 @@ APPLICATIONS RESPONSIVE
         min-width: 650px;
     }
 
+}
+
+/* =========================================================
+   APPLICATION TABLE - COMPACT FIT
+========================================================= */
+
+/* Checkbox */
+.applications-table th:nth-child(1),
+.applications-table td:nth-child(1) {
+    width: 42px;
+}
+
+/* Candidate */
+.applications-table th:nth-child(2),
+.applications-table td:nth-child(2) {
+    width: 16%;
+}
+
+/* Email - slightly wider */
+.applications-table th:nth-child(3),
+.applications-table td:nth-child(3) {
+    width: 18%;
+}
+
+/* Job Opening */
+.applications-table th:nth-child(4),
+.applications-table td:nth-child(4) {
+    width: 16%;
+}
+
+/* Source - compact */
+.applications-table th:nth-child(5),
+.applications-table td:nth-child(5) {
+    width: 10%;
+}
+
+/* Stage - compact */
+.applications-table th:nth-child(6),
+.applications-table td:nth-child(6) {
+    width: 13%;
+}
+
+/* Applied - compact */
+.applications-table th:nth-child(7),
+.applications-table td:nth-child(7) {
+    width: 11%;
+}
+
+/* Action - enough space for View button */
+.applications-table th:nth-child(8),
+.applications-table td:nth-child(8) {
+    width: 8%;
+}
+
+
+/* Keep long text inside its column */
+.applications-table td {
+    overflow: hidden;
+}
+
+
+/* Email */
+.applications-table .email-cell {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* Job */
+.applications-table .job-cell {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* Source */
+.applications-table .source-cell {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* Candidate name */
+.applications-table .candidate-cell {
+    min-width: 0;
+}
+
+.applications-table .candidate-cell strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* Stage */
+.applications-table .stage-cell {
+    gap: 3px;
+    flex-wrap: nowrap;
+}
+
+.applications-table .status {
+    padding: 4px 7px;
+    white-space: nowrap;
+}
+
+
+/* Action */
+.applications-table .view-candidate-btn {
+    padding: 6px 8px;
+    white-space: nowrap;
 }

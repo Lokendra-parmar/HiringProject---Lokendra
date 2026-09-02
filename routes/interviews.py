@@ -278,10 +278,7 @@ def add_feedback(application_id):
         application_id=application.id,
         event_type="INTERVIEW_FEEDBACK_SUBMITTED",
         actor_id=current_user.id,
-        message=(
-            f"Interview feedback submitted by "
-            f"{current_user.name}."
-        )
+        message=content
     )
 
     db.session.commit()

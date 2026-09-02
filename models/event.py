@@ -51,3 +51,8 @@ class ApplicationEvent(db.Model):
         "Application",
         back_populates="events"
     )
+
+    actor = db.relationship(
+        "User",
+        foreign_keys=[actor_id]
+    )

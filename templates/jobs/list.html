@@ -115,6 +115,16 @@ Job Openings
 
             <td class="actions">
 
+                <a
+                    href="{{ url_for(
+                        'applications.application_list',
+                        job_id=job.id
+                    ) }}"
+                    class="small-btn"
+                >
+                    View Applications
+                </a>
+
                 {% if job.status != "archived" %}
 
                     <a
