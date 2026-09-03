@@ -4,3 +4,6 @@ venv/
 *.db
 database.sqlite3
 __pycache__/
+instance
+hiring_pipeline.db
+*.pyc 
