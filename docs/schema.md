@@ -10,7 +10,7 @@ Answer each of these, in your own words.
 
 # Schema
 
-The application uses SQLAlchemy models. The local database is SQLite; the production target is PostgreSQL. The schema is relational and keeps the main entities separate while using join/event tables where the relationship or history requires it.
+The application uses SQLAlchemy models. SQLite is used for local development, while PostgreSQL is used in the deployed production environment. The schema is relational and keeps the main entities separate while using join/event tables where the relationship or history requires it.
 
 ## 1. `users`
 
@@ -162,9 +162,15 @@ The current stage is stored directly on `applications` rather than calculated fr
 
 The event table still records the complete transition history, so the denormalised current-state fields do not replace the audit trail.
 
-## What would break first at 100x the data?
 
-The first pressure point would be broad application-list and dashboard queries: text search across candidate name/email, dashboard aggregations, event/timeline loading, and CSV export could become expensive as row counts grow.
+## What Would Break First at 100x the Data?
 
-The next improvements would be database indexes for frequently filtered/sorted columns, PostgreSQL-native full-text/trigram search for candidate lookup, tighter pagination strategies, aggregation/query optimization, and avoiding loading an entire event history when only a recent page is needed. CSV export would also need streaming rather than building the entire result in memory.
-"""
+The first likely bottleneck would be the **applications listing and search workflow**. These pages combine several potentially expensive operations: searching candidate names/emails, filtering by job, stage and source, sorting, calculating the total number of matching records for pagination, and loading related application information.
+
+At 100x the current data volume, these queries would place significantly more load on the database, particularly if users frequently perform broad text searches or sorting without suitable indexes.
+
+The dashboard and CSV export would be the next areas to watch. Dashboard queries aggregate application data across jobs and stages, while CSV export can become expensive if a large number of rows are loaded into memory at once.
+
+I would address these issues in stages rather than prematurely optimizing the current system:
+
+The core schema would not need a major redesign; the main improvements would be query optimization, indexing, and more efficient data retrieval.

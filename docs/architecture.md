@@ -1,17 +1,10 @@
 # Architecture
 
-Answer each of these, in your own words, once the system has taken real shape.
-
-- What are the moving pieces, and how do they talk to each other?
-- Where does each piece run?
-- What is the request path for one representative user action, end to end?
-- What did you decide *not* to build, and why?
-
 ## Overview
 
 Hiring Pipeline is a server-rendered Flask application for recruiters and interviewers. The application uses Flask for HTTP routing and request handling, Flask-Login for authentication/session management, Flask-SQLAlchemy for database access, Jinja2 templates for server-side HTML rendering, and small utility modules for pipeline rules, role checks, interviewer access, timezone conversion, and stalled-application logic.
 
-The current local environment uses SQLite. The application is intentionally configured so that the database connection can be supplied through the `DATABASE_URL` environment variable, allowing the same application code to use PostgreSQL in production.
+During development ,local environment uses SQLite. The application is intentionally configured so that the database connection can be supplied through the `DATABASE_URL` environment variable, allowing the same application code to use PostgreSQL in production.
 
 ## Moving pieces
 
@@ -34,13 +27,13 @@ The current local environment uses SQLite. The application is intentionally conf
   - timezone utilities format timestamps for the UI.
 - **Jinja templates and CSS**: render the server response and provide the browser UI. Search, filtering, sorting, pagination, authorization and business rules remain server-side.
 - **Chart.js**: used by the dashboard for browser-side chart rendering after the server supplies the aggregated data.
-- **Database**: SQLite locally and PostgreSQL for the planned production environment.
+- **Database**: SQLite locally during development and PostgreSQL for the production environment.
 
 ## Where each piece runs
 
 During local development, Flask, the templates, Python business logic, and SQLite database run on the developer's machine.
 
-For production, the planned architecture is a Render web service running the Flask application with Gunicorn, connected to a managed Render PostgreSQL database. Secrets and connection strings will be supplied as environment variables rather than committed to the repository.
+For production, the  architecture is a Render web service running the Flask application with Gunicorn, connected to a managed Render PostgreSQL database. Secrets and connection strings will be supplied as environment variables rather than committed to the repository.
 
 The browser only receives rendered HTML, CSS, JavaScript and chart data. It does not contain the authoritative hiring-pipeline rules.
 
@@ -63,8 +56,20 @@ This separation means a user cannot bypass the pipeline rules simply by manually
 
 The UI hides controls that a role should not use, but authorization is also enforced on the server. Recruiter-only routes use the role decorator. Interviewer candidate access is additionally checked against the interviewer/application assignment before the detail page is shown. Interviewers therefore cannot obtain another application's pipeline merely by changing an ID in the URL.
 
-## Deliberately not built
+## What We Deliberately Chose Not to Build
 
-The assignment's ten required goals were prioritized over optional stretch work. I did not build a public careers page, structured scorecards, self-service scheduling links, a candidate-facing portal, resume skill search/tagging, offer-letter generation, source-of-hire reporting, email digests, or referral tracking.
+While designing the system, we intentionally avoided adding complexity that was not necessary for the core hiring workflow. The main decisions were:
 
-I also kept the application server-rendered instead of introducing a separate frontend SPA. That reduced deployment complexity and kept the limited development time focused on authorization, pipeline correctness, immutable history, search, bulk actions, dashboard reporting, and stalled alerts.
+- **We did not build a separate frontend application or a heavily client-driven architecture:**  
+  The UI remains server-rendered using Flask and Jinja2, with JavaScript used only where it adds clear value, such as dashboard charts. This avoids maintaining a separate React/Vue application, API layer, and client-side state management system.
+
+- **We did not duplicate business and authorization logic across routes or rely on the UI for security:**  
+  Pipeline transitions, role checks, interviewer access, stalled-application detection, and event creation are centralized in dedicated utilities. Authorization is enforced on the server rather than relying on hidden or disabled UI controls. This keeps the rules consistent and prevents users from bypassing restrictions through direct requests.
+
+- **We did not build a mutable application-history system or allow arbitrary state changes:**  
+  Application events are append-only, and pipeline transitions are explicitly controlled rather than allowing an application to jump directly to any stage. This preserves a reliable audit trail and prevents invalid hiring-state changes.
+
+- **We did not introduce separate services or separate database implementations for different environments:**  
+  The application remains a modular Flask application using blueprints rather than microservices, while SQLAlchemy allows the same data-access layer to work with SQLite locally and PostgreSQL in production through `DATABASE_URL`. This keeps deployment and maintenance simpler while remaining production-ready.
+
+These decisions were made to keep the system focused on correctness, security, maintainability, and the core hiring workflow rather than adding architectural complexity without a proportional benefit.

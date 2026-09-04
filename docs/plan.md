@@ -68,6 +68,17 @@ The project was built incrementally around the ten required behaviours rather th
 **Estimate:** about 2 hours  
 **Actual:** roughly 2–2.5 hours.
 
+## Session 6 — Frontend UI and visual refinement
+
+- Refined the frontend UI across the application pages.
+- Improved layouts, spacing, typography, navigation, forms, tables, cards, and status indicators.
+- Added consistent styling across the recruiter and interviewer workflows.
+- Improved the dashboard, candidate detail, job openings, applications, and interview views.
+- Verified that the UI remained consistent with the underlying server-side workflows and role restrictions.
+
+**Estimate:** about 1.5–2 hours
+**Actual:** roughly 2 hours.
+
 ### Final verification / deployment preparation
 
 - Added multiple demo users.
@@ -90,19 +101,17 @@ Visual refinement was intentionally kept after the required behaviour. This avoi
 
 The original target was approximately twelve hours, as suggested by the assignment. I used that as a scope guide rather than trying to time every individual coding action. The work was close to the intended budget, but some tasks took longer than expected because they required manual verification of edge cases, especially pipeline transitions, interviewer authorization, bulk-action partial failures, history, and stalled alerts.
 
-## What I cut when time became tight?
 
-I did not spend time on the optional stretch features. In particular, I left out:
 
-- public careers page;
-- structured interview scorecards;
-- candidate-facing portal;
-- resume skill tagging/search;
-- offer-letter generation;
-- source-of-hire reporting;
-- email digests;
-- referral tracking;
-- self-service interview scheduling links.
+## What I Cut When Time Became Tight?
 
-I also avoided introducing a separate frontend framework. The server-rendered Flask/Jinja approach was sufficient for the requirements and reduced deployment and maintenance overhead.
-"""
+As the deadline approached, I prioritized completing and validating the required hiring workflows over further enhancements.
+
+The main things I cut or kept intentionally minimal were:
+- **Further frontend polish:** I completed the UI refinement across the main pages, but stopped short of additional visual refinements and smaller interaction improvements once the overall interface was consistent and usable.
+
+- **Additional testing beyond the core workflows:** I focused testing on the important requirements and edge cases, especially role-based access, pipeline transitions, rejection/reinstatement, interviewer access, bulk actions, history, and stalled alerts, rather than spending time on exhaustive testing of every possible input combination.
+
+- **Additional architectural refinement:** I kept the existing Flask/Jinja and SQLAlchemy structure instead of spending the remaining time on further abstraction, additional services, or a more complex frontend architecture.
+
+This allowed the remaining time to be focused on making the required features **complete, reliable, usable, and deployment-ready** rather than increasing the feature count.
